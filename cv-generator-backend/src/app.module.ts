@@ -11,6 +11,8 @@ import { ProjectModule } from './project/project.module';
 import { CertificationModule } from './certification/certification.module';
 import { LanguageModule } from './language/language.module';
 import { JobPostingModule } from './job-posting/job-posting.module';
+import { AiModule } from './ai/ai.module';
+import { GeneratedCvModule } from './generated-cv/generated-cv.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { JobPostingModule } from './job-posting/job-posting.module';
     CertificationModule,
     LanguageModule,
     JobPostingModule,
+    AiModule,
+    GeneratedCvModule,
   ],
   controllers: [AppController],
   providers: [AppService],
