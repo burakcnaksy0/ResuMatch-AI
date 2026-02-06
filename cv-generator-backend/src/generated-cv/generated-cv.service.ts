@@ -1,12 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AiService } from '../ai/ai.service';
+import { PdfService } from '../pdf/pdf.service';
 
 @Injectable()
 export class GeneratedCvService {
     constructor(
         private prisma: PrismaService,
         private aiService: AiService,
+        private pdfService: PdfService,
     ) { }
 
     async generateCV(profileId: string, jobPostingId: string, userId: string) {
@@ -35,7 +37,7 @@ export class GeneratedCvService {
                 profileId,
                 jobPostingId,
                 generationStatus: 'pending',
-                aiModelUsed: 'claude-3-5-sonnet-20241022',
+                aiModelUsed: 'openai/gpt-4o-2024-11-20',
             },
         });
 
@@ -107,6 +109,58 @@ export class GeneratedCvService {
         }
 
         return cv;
+    }
+
+    async generatePdf(id: string) {
+        const cv = await this.prisma.generatedCV.findUnique({
+            where: { id },
+            include: {
+                profile: true,
+                jobPosting: true,
+            },
+        });
+
+        if (!cv || !cv.generatedContent) {
+            throw new Error('CV not found or content not generated');
+        }
+
+        const content = cv.generatedContent as any;
+
+        const templateData = {
+            fullName: cv.profile?.fullName || 'Candidate',
+            htmlTitle: cv.jobPosting?.jobTitle || 'CV',
+            jobTitle: cv.jobPosting?.jobTitle || 'Position',
+            company: cv.jobPosting?.company || 'Company',
+            generationDate: new Date(cv.createdAt).toLocaleDateString(),
+            professionalSummary: content.professionalSummary,
+            workExperience: content.workExperience,
+            education: content.education,
+            skills: content.skills,
+            projects: content.projects,
+        };
+
+        const outputFilename = `cv-${cv.id}.pdf`;
+        const relativePath = await this.pdfService.generatePdf(templateData, outputFilename);
+
+        const pdfUrl = `http://localhost:8080/api/generated-cv/${id}/download?userId=${cv.userId}`;
+        await this.prisma.generatedCV.update({
+            where: { id },
+            data: {
+                pdfUrl,
+                pdfStoragePath: relativePath,
+            },
+        });
+
+        return { url: pdfUrl };
+    }
+
+    async getPdfPath(id: string, userId: string) {
+        const cv = await this.findOne(id, userId);
+        if (!cv.pdfStoragePath) {
+            throw new NotFoundException('PDF not yet generated');
+        }
+        // Assuming relativePath is from project root
+        return cv.pdfStoragePath;
     }
 
     async remove(id: string, userId: string) {

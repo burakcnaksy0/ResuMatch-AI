@@ -1,6 +1,7 @@
 import { IsString, IsOptional, IsArray, IsUrl } from 'class-validator';
 
 export class CreateJobPostingDto {
+    @IsOptional()
     @IsString()
     userId: string;
 

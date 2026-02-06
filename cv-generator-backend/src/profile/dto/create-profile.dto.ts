@@ -1,6 +1,7 @@
 import { IsString, IsOptional, IsEmail, IsUrl, MaxLength } from 'class-validator';
 
 export class CreateProfileDto {
+    @IsOptional()
     @IsString()
     userId: string;
 

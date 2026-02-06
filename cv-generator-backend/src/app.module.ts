@@ -13,9 +13,12 @@ import { LanguageModule } from './language/language.module';
 import { JobPostingModule } from './job-posting/job-posting.module';
 import { AiModule } from './ai/ai.module';
 import { GeneratedCvModule } from './generated-cv/generated-cv.module';
+import { PdfModule } from './pdf/pdf.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+    PdfModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -30,6 +33,7 @@ import { GeneratedCvModule } from './generated-cv/generated-cv.module';
     JobPostingModule,
     AiModule,
     GeneratedCvModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

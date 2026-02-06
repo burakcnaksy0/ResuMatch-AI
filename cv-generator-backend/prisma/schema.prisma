@@ -11,6 +11,21 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  profile      Profile?
+  jobPostings  JobPosting[]
+  generatedCVs GeneratedCV[]
+
+  @@map("users")
+}
+
 model Profile {
   id                  String   @id @default(uuid())
   userId              String   @unique @map("user_id")
@@ -23,6 +38,8 @@ model Profile {
   professionalSummary String?  @map("professional_summary") @db.Text
   createdAt           DateTime @default(now()) @map("created_at")
   updatedAt           DateTime @updatedAt @map("updated_at")
+
+  user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   education      Education[]
   workExperience WorkExperience[]
@@ -139,6 +156,7 @@ model JobPosting {
   keywords        Json?    @db.JsonB
   createdAt       DateTime @default(now()) @map("created_at")
 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   generatedCVs GeneratedCV[]
 
   @@map("job_postings")
@@ -156,8 +174,10 @@ model GeneratedCV {
   aiModelUsed      String?  @map("ai_model_used")
   createdAt        DateTime @default(now()) @map("created_at")
 
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   profile    Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
   jobPosting JobPosting @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
 
   @@map("generated_cvs")
 }
+

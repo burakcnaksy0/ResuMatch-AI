@@ -8,19 +8,30 @@ import {
     Delete,
     HttpCode,
     HttpStatus,
+    UseGuards,
+    Request,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('profile')
+@UseGuards(JwtAuthGuard)
 export class ProfileController {
     constructor(private readonly profileService: ProfileService) { }
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    create(@Body() createProfileDto: CreateProfileDto) {
+    create(@Request() req, @Body() createProfileDto: CreateProfileDto) {
+        // Enforce userId from valid token
+        createProfileDto.userId = req.user.userId;
         return this.profileService.create(createProfileDto);
+    }
+
+    @Get('me')
+    async findMyProfile(@Request() req) {
+        return this.profileService.findByUserId(req.user.userId);
     }
 
     @Get()
@@ -31,11 +42,6 @@ export class ProfileController {
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.profileService.findOne(id);
-    }
-
-    @Get('user/:userId')
-    findByUserId(@Param('userId') userId: string) {
-        return this.profileService.findByUserId(userId);
     }
 
     @Patch(':id')

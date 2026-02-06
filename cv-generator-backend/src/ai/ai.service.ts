@@ -1,143 +1,152 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 import { PrismaService } from '../prisma/prisma.service';
 
 interface CVGenerationInput {
-    profileId: string;
-    jobPostingId: string;
+  profileId: string;
+  jobPostingId: string;
 }
 
 interface GeneratedCVContent {
-    professionalSummary: string;
-    workExperience: Array<{
-        company: string;
-        position: string;
-        location?: string;
-        startDate: string;
-        endDate?: string;
-        description: string;
-        achievements: string[];
-    }>;
-    education: Array<{
-        institution: string;
-        degree: string;
-        fieldOfStudy?: string;
-        startDate: string;
-        endDate?: string;
-        gpa?: number;
-        description?: string;
-    }>;
-    skills: Array<{
-        name: string;
-        category?: string;
-        proficiencyLevel?: string;
-    }>;
-    projects: Array<{
-        name: string;
-        description?: string;
-        technologies: string[];
-        url?: string;
-        githubUrl?: string;
-    }>;
-    certifications: Array<{
-        name: string;
-        issuer: string;
-        issueDate: string;
-        expiryDate?: string;
-    }>;
-    languages: Array<{
-        name: string;
-        proficiency?: string;
-    }>;
+  professionalSummary: string;
+  workExperience: Array<{
+    company: string;
+    position: string;
+    location?: string;
+    startDate: string;
+    endDate?: string;
+    description: string;
+    achievements: string[];
+  }>;
+  education: Array<{
+    institution: string;
+    degree: string;
+    fieldOfStudy?: string;
+    startDate: string;
+    endDate?: string;
+    gpa?: number;
+    description?: string;
+  }>;
+  skills: Array<{
+    name: string;
+    category?: string;
+    proficiencyLevel?: string;
+  }>;
+  projects: Array<{
+    name: string;
+    description?: string;
+    technologies: string[];
+    url?: string;
+    githubUrl?: string;
+  }>;
+  certifications: Array<{
+    name: string;
+    issuer: string;
+    issueDate: string;
+    expiryDate?: string;
+  }>;
+  languages: Array<{
+    name: string;
+    proficiency?: string;
+  }>;
 }
 
 @Injectable()
 export class AiService {
-    private readonly logger = new Logger(AiService.name);
-    private anthropic: Anthropic;
+  private readonly logger = new Logger(AiService.name);
+  private openai: OpenAI;
 
-    constructor(
-        private configService: ConfigService,
-        private prisma: PrismaService,
-    ) {
-        const apiKey = this.configService.get<string>('ANTHROPIC_API_KEY');
-        if (!apiKey) {
-            throw new Error('ANTHROPIC_API_KEY is not configured');
-        }
-        this.anthropic = new Anthropic({ apiKey });
+  constructor(
+    private configService: ConfigService,
+    private prisma: PrismaService,
+  ) {
+    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
+    const baseURL = this.configService.get<string>('OPENAI_BASE_URL') || 'https://api.openai.com/v1';
+
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY is not configured');
     }
 
-    async generateCV(input: CVGenerationInput): Promise<GeneratedCVContent> {
-        this.logger.log(
-            `Generating CV for profile ${input.profileId} and job ${input.jobPostingId}`,
-        );
+    this.openai = new OpenAI({
+      apiKey,
+      baseURL,
+    });
+  }
 
-        // Fetch profile data with all relations
-        const profile = await this.prisma.profile.findUnique({
-            where: { id: input.profileId },
-            include: {
-                education: true,
-                workExperience: true,
-                skills: true,
-                projects: true,
-                certifications: true,
-                languages: true,
-            },
-        });
+  async generateCV(input: CVGenerationInput): Promise<GeneratedCVContent> {
+    this.logger.log(
+      `Generating CV for profile ${input.profileId} and job ${input.jobPostingId}`,
+    );
 
-        if (!profile) {
-            throw new Error('Profile not found');
-        }
+    // Fetch profile data with all relations
+    const profile = await this.prisma.profile.findUnique({
+      where: { id: input.profileId },
+      include: {
+        education: true,
+        workExperience: true,
+        skills: true,
+        projects: true,
+        certifications: true,
+        languages: true,
+      },
+    });
 
-        // Fetch job posting
-        const jobPosting = await this.prisma.jobPosting.findUnique({
-            where: { id: input.jobPostingId },
-        });
-
-        if (!jobPosting) {
-            throw new Error('Job posting not found');
-        }
-
-        // Generate CV using Claude
-        const prompt = this.buildPrompt(profile, jobPosting);
-        const model = this.configService.get<string>('ANTHROPIC_MODEL') || 'claude-3-5-sonnet-20241022';
-
-        try {
-            const message = await this.anthropic.messages.create({
-                model,
-                max_tokens: 4096,
-                messages: [
-                    {
-                        role: 'user',
-                        content: prompt,
-                    },
-                ],
-            });
-
-            // Extract JSON from response
-            const responseText = message.content[0].type === 'text' ? message.content[0].text : '';
-            const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-
-            if (!jsonMatch) {
-                throw new Error('Failed to extract JSON from AI response');
-            }
-
-            const generatedContent = JSON.parse(jsonMatch[0]) as GeneratedCVContent;
-
-            this.logger.log('CV generated successfully');
-            return generatedContent;
-        } catch (error) {
-            this.logger.error('Failed to generate CV', error);
-            throw new Error(`CV generation failed: ${error.message}`);
-        }
+    if (!profile) {
+      throw new Error('Profile not found');
     }
 
-    private buildPrompt(profile: any, jobPosting: any): string {
-        const keywords = (jobPosting.keywords as string[]) || [];
-        const requiredSkills = (jobPosting.requiredSkills as string[]) || [];
+    // Fetch job posting
+    const jobPosting = await this.prisma.jobPosting.findUnique({
+      where: { id: input.jobPostingId },
+    });
 
-        return `You are an expert CV writer. Generate a tailored CV based on the candidate's profile and the job posting requirements.
+    if (!jobPosting) {
+      throw new Error('Job posting not found');
+    }
+
+    // Generate CV using OpenAI/OpenRouter
+    const prompt = this.buildPrompt(profile, jobPosting);
+    const model = this.configService.get<string>('OPENAI_MODEL') || 'openai/gpt-4o';
+
+    try {
+      const completion = await this.openai.chat.completions.create({
+        model,
+        max_tokens: 3000,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert CV writer. Output ONLY valid JSON.',
+          },
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+        response_format: { type: "json_object" }, // Ensure JSON output
+      });
+
+      const responseText = completion.choices[0].message.content;
+
+      if (!responseText) {
+        throw new Error('Empty response from AI');
+      }
+
+      const generatedContent = JSON.parse(responseText) as GeneratedCVContent;
+
+      this.logger.log('CV generated successfully');
+      return generatedContent;
+    } catch (error) {
+      this.logger.error('Failed to generate CV', error);
+      throw new Error(`CV generation failed: ${error.message}`);
+    }
+  }
+
+  private buildPrompt(profile: any, jobPosting: any): string {
+    const keywords = (jobPosting.keywords as string[]) || [];
+    const requiredSkills = (jobPosting.requiredSkills as string[]) || [];
+
+    return `Generate a tailored CV based on the candidate's profile and the job posting requirements.
 
 **Job Posting:**
 - Title: ${jobPosting.jobTitle}
@@ -200,7 +209,7 @@ ${profile.languages.map((lang: any) => `- ${lang.name} (${lang.proficiency || 'N
 7. Tailor the language to match the job posting's tone and requirements
 
 **Output Format:**
-Return ONLY a valid JSON object with this exact structure (no markdown, no code blocks, just raw JSON):
+Return ONLY a valid JSON object with this exact structure:
 {
   "professionalSummary": "string",
   "workExperience": [
@@ -256,5 +265,5 @@ Return ONLY a valid JSON object with this exact structure (no markdown, no code 
     }
   ]
 }`;
-    }
+  }
 }
