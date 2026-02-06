@@ -10,6 +10,7 @@ import { SkillModule } from './skill/skill.module';
 import { ProjectModule } from './project/project.module';
 import { CertificationModule } from './certification/certification.module';
 import { LanguageModule } from './language/language.module';
+import { JobPostingModule } from './job-posting/job-posting.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { LanguageModule } from './language/language.module';
     ProjectModule,
     CertificationModule,
     LanguageModule,
+    JobPostingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

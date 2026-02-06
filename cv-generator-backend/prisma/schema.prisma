@@ -12,17 +12,17 @@ datasource db {
 }
 
 model Profile {
-  id                   String   @id @default(uuid())
-  userId               String   @unique @map("user_id")
-  fullName             String   @map("full_name")
-  phone                String?
-  location             String?
-  linkedinUrl          String?  @map("linkedin_url")
-  githubUrl            String?  @map("github_url")
-  portfolioUrl         String?  @map("portfolio_url")
-  professionalSummary  String?  @map("professional_summary") @db.Text
-  createdAt            DateTime @default(now()) @map("created_at")
-  updatedAt            DateTime @updatedAt @map("updated_at")
+  id                  String   @id @default(uuid())
+  userId              String   @unique @map("user_id")
+  fullName            String   @map("full_name")
+  phone               String?
+  location            String?
+  linkedinUrl         String?  @map("linkedin_url")
+  githubUrl           String?  @map("github_url")
+  portfolioUrl        String?  @map("portfolio_url")
+  professionalSummary String?  @map("professional_summary") @db.Text
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
 
   education      Education[]
   workExperience WorkExperience[]
