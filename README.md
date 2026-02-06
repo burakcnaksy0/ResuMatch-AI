@@ -20,12 +20,13 @@ A full-stack application that generates job-specific, ATS-optimized CVs using AI
 ## Tech Stack
 
 ### Backend
-- **Framework:** Spring Boot 3.2.2
-- **Language:** Java 17
+- **Framework:** NestJS (Node.js)
+- **Language:** TypeScript
 - **Database:** Supabase (PostgreSQL)
-- **Authentication:** Spring Security + JWT
+- **ORM:** Prisma
+- **Authentication:** Supabase Auth + JWT Guards
 - **AI:** Anthropic Claude API
-- **PDF:** Apache PDFBox
+- **PDF:** PDFKit
 
 ### Frontend
 - **Framework:** Next.js 15
