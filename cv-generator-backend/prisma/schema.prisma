@@ -18,6 +18,15 @@ model User {
   password  String
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  
+  googleId           String?   @unique @map("google_id")
+  resetToken         String?   @map("reset_token")
+  resetTokenExpiry   DateTime? @map("reset_token_expiry")
+  
+  emailVerified          Boolean   @default(false) @map("email_verified")
+  verificationCode       String?   @map("verification_code")
+  verificationCodeExpiry DateTime? @map("verification_code_expiry")
+  lastCodeSentAt         DateTime? @map("last_code_sent_at")
 
   profile      Profile?
   jobPostings  JobPosting[]
@@ -29,13 +38,14 @@ model User {
 model Profile {
   id                  String   @id @default(uuid())
   userId              String   @unique @map("user_id")
-  fullName            String   @map("full_name")
+  fullName            String?  @map("full_name")
   phone               String?
   location            String?
   linkedinUrl         String?  @map("linkedin_url")
   githubUrl           String?  @map("github_url")
   portfolioUrl        String?  @map("portfolio_url")
   professionalSummary String?  @map("professional_summary") @db.Text
+  profilePictureUrl   String?  @map("profile_picture_url")
   createdAt           DateTime @default(now()) @map("created_at")
   updatedAt           DateTime @updatedAt @map("updated_at")
 
@@ -166,17 +176,23 @@ model GeneratedCV {
   id               String   @id @default(uuid())
   userId           String   @map("user_id")
   profileId        String   @map("profile_id")
-  jobPostingId     String   @map("job_posting_id")
+  jobPostingId     String?   @map("job_posting_id")
   generatedContent Json?    @map("generated_content") @db.JsonB
   pdfUrl           String?  @map("pdf_url")
   pdfStoragePath   String?  @map("pdf_storage_path")
-  generationStatus String   @default("pending") @map("generation_status")
-  aiModelUsed      String?  @map("ai_model_used")
-  createdAt        DateTime @default(now()) @map("created_at")
+  generationStatus     String   @default("pending") @map("generation_status")
+  aiModelUsed          String?  @map("ai_model_used")
+  includeProfilePicture Boolean @default(false) @map("include_profile_picture")
+  createdAt            DateTime @default(now()) @map("created_at")
 
   user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   profile    Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  jobPosting JobPosting @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+  jobPosting JobPosting? @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+
+  cvSpecificPhotoUrl   String?  @map("cv_specific_photo_url")
+  professionalSummary  String?  @map("professional_summary") @db.Text
+  tone                 String?
+  templateName         String?  @default("modern") @map("template_name")
 
   @@map("generated_cvs")
 }

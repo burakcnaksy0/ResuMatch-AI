@@ -3,10 +3,17 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateJobPostingDto } from './dto/create-job-posting.dto';
 import { UpdateJobPostingDto } from './dto/update-job-posting.dto';
 import { Prisma } from '@prisma/client';
+import { AiService } from '../ai/ai.service';
+import { ProfileService } from '../profile/profile.service';
 
 @Injectable()
 export class JobPostingService {
-    constructor(private prisma: PrismaService) { }
+    constructor(
+        private prisma: PrismaService,
+        private aiService: AiService,
+        private profileService: ProfileService
+    ) { }
+
 
     async create(createJobPostingDto: CreateJobPostingDto) {
         // Extract keywords from job description
@@ -165,10 +172,26 @@ export class JobPostingService {
     async analyzeJobPosting(id: string, userId: string) {
         const jobPosting = await this.findOne(id, userId);
 
-        return {
-            keywords: (jobPosting.keywords as string[]) || [],
-            requiredSkills: (jobPosting.requiredSkills as string[]) || [],
-            experienceLevel: jobPosting.experienceLevel || 'Not specified',
-        };
+        let profile = null;
+        try {
+            profile = await this.profileService.findByUserId(userId);
+        } catch (error) {
+            // Profile might not exist, proceed without comparison
+        }
+
+        // Call AI Service
+        const analysis = await this.aiService.analyzeJob(jobPosting.jobDescription, profile);
+
+        // Update JobPosting with extracted data
+        await this.prisma.jobPosting.update({
+            where: { id },
+            data: {
+                keywords: analysis.keywords || [],
+                requiredSkills: [...(analysis.technicalSkills || []), ...(analysis.softSkills || [])],
+                experienceLevel: analysis.experienceLevel || 'Not specified',
+            },
+        });
+
+        return analysis;
     }
 }

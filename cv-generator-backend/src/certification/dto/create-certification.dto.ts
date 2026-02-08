@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsDateString, IsUrl } from 'class-validator';
+import { IsString, IsOptional, IsDateString, IsUrl, ValidateIf } from 'class-validator';
 
 export class CreateCertificationDto {
     @IsString()
@@ -14,6 +14,7 @@ export class CreateCertificationDto {
     issueDate: string;
 
     @IsOptional()
+    @ValidateIf((o) => o.expiryDate !== '')
     @IsDateString()
     expiryDate?: string;
 
@@ -22,6 +23,7 @@ export class CreateCertificationDto {
     credentialId?: string;
 
     @IsOptional()
+    @ValidateIf((o) => o.credentialUrl !== '')
     @IsUrl()
     credentialUrl?: string;
 }

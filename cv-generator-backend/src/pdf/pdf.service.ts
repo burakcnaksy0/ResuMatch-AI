@@ -4,7 +4,7 @@ import * as handlebars from 'handlebars';
 import * as fs from 'fs';
 import * as path from 'path';
 
-interface CvData {
+export interface CvData {
     fullName: string;
     jobTitle: string;
     company: string;
@@ -13,13 +13,21 @@ interface CvData {
     workExperience: any[];
     education: any[];
     skills: any[];
+    skillGroups?: { category: string; skills: any[] }[];
     projects: any[];
+    profilePictureUrl?: string; // Optional URL for the profile picture
 }
 
 @Injectable()
 export class PdfService {
-    async generatePdf(data: CvData, outputFilename: string): Promise<string> {
-        const templatePath = path.join(process.cwd(), 'src/pdf/templates/cv.hbs');
+    async generatePdf(data: CvData, outputFilename: string, templateName: string = 'modern'): Promise<string> {
+        let templatePath = path.join(process.cwd(), `src/pdf/templates/${templateName.toLowerCase()}.hbs`);
+
+        if (!fs.existsSync(templatePath)) {
+            console.warn(`Template ${templateName} not found, falling back to modern`);
+            templatePath = path.join(process.cwd(), 'src/pdf/templates/modern.hbs');
+        }
+
         const templateHtml = fs.readFileSync(templatePath, 'utf8');
         const template = handlebars.compile(templateHtml);
         const html = template(data);

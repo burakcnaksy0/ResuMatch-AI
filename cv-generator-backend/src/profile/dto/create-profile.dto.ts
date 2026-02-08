@@ -5,9 +5,10 @@ export class CreateProfileDto {
     @IsString()
     userId: string;
 
+    @IsOptional()
     @IsString()
     @MaxLength(100)
-    fullName: string;
+    fullName?: string;
 
     @IsOptional()
     @IsString()
@@ -32,4 +33,8 @@ export class CreateProfileDto {
     @IsOptional()
     @IsString()
     professionalSummary?: string;
+
+    @IsOptional()
+    @IsString()
+    profilePictureUrl?: string;
 }

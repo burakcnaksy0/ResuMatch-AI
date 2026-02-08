@@ -5,10 +5,20 @@ import { PrismaService } from '../prisma/prisma.service';
 
 interface CVGenerationInput {
   profileId: string;
-  jobPostingId: string;
+  jobPostingId?: string;
+  tone?: string;
 }
 
 interface GeneratedCVContent {
+  sectionTitles?: {
+    professionalSummary: string;
+    workExperience: string;
+    education: string;
+    skills: string;
+    projects: string;
+    certifications: string;
+    languages: string;
+  };
   professionalSummary: string;
   workExperience: Array<{
     company: string;
@@ -76,7 +86,7 @@ export class AiService {
 
   async generateCV(input: CVGenerationInput): Promise<GeneratedCVContent> {
     this.logger.log(
-      `Generating CV for profile ${input.profileId} and job ${input.jobPostingId}`,
+      `Generating CV for profile ${input.profileId} ${input.jobPostingId ? `and job ${input.jobPostingId}` : '(General CV)'} with tone: ${input.tone || 'Professional'}`,
     );
 
     // Fetch profile data with all relations
@@ -96,23 +106,28 @@ export class AiService {
       throw new Error('Profile not found');
     }
 
-    // Fetch job posting
-    const jobPosting = await this.prisma.jobPosting.findUnique({
-      where: { id: input.jobPostingId },
-    });
+    // Fetch job posting if provided
+    let jobPosting: any = null;
+    if (input.jobPostingId) {
+      jobPosting = await this.prisma.jobPosting.findUnique({
+        where: { id: input.jobPostingId },
+      });
 
-    if (!jobPosting) {
-      throw new Error('Job posting not found');
+      if (!jobPosting) {
+        throw new Error('Job posting not found');
+      }
     }
 
     // Generate CV using OpenAI/OpenRouter
-    const prompt = this.buildPrompt(profile, jobPosting);
-    const model = this.configService.get<string>('OPENAI_MODEL') || 'openai/gpt-4o';
+    const prompt = this.buildPrompt(profile, jobPosting, input.tone);
+    // Use gpt-4o-mini which is much more affordable but still very capable for this task
+    // The previous error indicated insufficient credits for gpt-4o with high token limit
+    const model = 'gpt-4o-mini';
 
     try {
       const completion = await this.openai.chat.completions.create({
         model,
-        max_tokens: 3000,
+        max_tokens: 2000,
         messages: [
           {
             role: 'system',
@@ -142,19 +157,36 @@ export class AiService {
     }
   }
 
-  private buildPrompt(profile: any, jobPosting: any): string {
-    const keywords = (jobPosting.keywords as string[]) || [];
-    const requiredSkills = (jobPosting.requiredSkills as string[]) || [];
-
-    return `Generate a tailored CV based on the candidate's profile and the job posting requirements.
-
+  private buildPrompt(profile: any, jobPosting: any | null, tone: string = 'Professional'): string {
+    const jobContext = jobPosting ? `
 **Job Posting:**
 - Title: ${jobPosting.jobTitle}
 - Company: ${jobPosting.company || 'Not specified'}
 - Experience Level: ${jobPosting.experienceLevel || 'Not specified'}
-- Required Skills: ${requiredSkills.join(', ') || 'Not specified'}
-- Keywords: ${keywords.join(', ')}
+- Required Skills: ${((jobPosting.requiredSkills as string[]) || []).join(', ') || 'Not specified'}
+- Keywords: ${((jobPosting.keywords as string[]) || []).join(', ')}
 - Description: ${jobPosting.jobDescription}
+` : `
+**Context:**
+This is a general purpose CV based on the candidate's profile. Highlight their strongest skills and experiences to create a comprehensive professional profile.
+`;
+
+    const specificInstructions = jobPosting ? `
+1. **Professional Summary:** Write a unique, 3-5 sentence summary. It MUST be tailored to the job posting using the candidate's actual experience. Use the requested '${tone}' tone. If '${tone}' is 'Technical', focus heavily on stack and tools. If 'Leadership', focus on management and impact.
+2. **Experience & Projects:** Optimize descriptions to match the job requirements. Use action verbs.
+3. **Skills:** Highlight skills that match the job's required skills and keywords.
+` : `
+1. **Professional Summary:** Write a strong, 3-5 sentence professional summary that highlights the candidate's overall expertise, years of experience, and key achievements. Use a '${tone}' tone.
+2. **Experience & Projects:** Refine the descriptions to be professional, impact-oriented, and concise. Use strong action verbs.
+3. **Skills:** Organize skills logically. Group them if possible (though pure JSON array is requested, use category field effectively).
+`;
+
+    return `Generate a ${jobPosting ? 'tailored' : 'comprehensive professional'} CV based on the candidate's profile ${jobPosting ? 'and the job posting requirements' : ''}.
+
+**Style/Tone Requirement:** ${tone}
+(Use this tone specifically for the Professional Summary and the descriptions of experiences/projects. Common tones include: Professional, Technical, Leadership, Creative, Academic.)
+
+${jobContext}
 
 **Candidate Profile:**
 - Name: ${profile.fullName}
@@ -200,17 +232,23 @@ ${profile.certifications.map((cert: any) => `- ${cert.name} by ${cert.issuer} ($
 ${profile.languages.map((lang: any) => `- ${lang.name} (${lang.proficiency || 'Not specified'})`).join('\n')}
 
 **Instructions:**
-1. Create a compelling professional summary (2-3 sentences) that highlights the candidate's most relevant experience and skills for THIS SPECIFIC JOB
-2. Optimize work experience descriptions to emphasize achievements and responsibilities that match the job requirements
-3. Highlight skills that match the job's required skills and keywords
-4. Reorder and emphasize relevant projects
-5. Keep all factual information accurate - DO NOT invent experience or skills
-6. Use action verbs and quantify achievements where possible
-7. Tailor the language to match the job posting's tone and requirements
+${specificInstructions}
+4. **Accuracy:** Do not invent facts.
+5. **Categorization:** For the 'Skills' section, assign a RELEVANT TECHNICAL CATEGORY to each skill. Examples: 'Programming Languages', 'Frameworks & Libraries', 'Databases', 'Cloud & DevOps', 'Tools', 'Soft Skills'. Do NOT use a generic 'Skills' category unless absolutely necessary. Group similar technologies together.
+6. **Localization (Section Titles):** Detect the language of the candidate's profile (e.g. Turkish or English). Generate the 'sectionTitles' object with appropriate titles in that language. For example, if Turkish, use 'Profesyonel Özet', 'İş Deneyimi', 'Eğitim', 'Yetenekler', 'Projeler'. All generated content (summary, descriptions) should be in the same language as the profile, unless the job posting is in English, in which case prioritize the job posting language. If uncertain, default to the Profile language.
 
 **Output Format:**
 Return ONLY a valid JSON object with this exact structure:
 {
+  "sectionTitles": {
+    "professionalSummary": "string",
+    "workExperience": "string",
+    "education": "string",
+    "skills": "string",
+    "projects": "string",
+    "certifications": "string",
+    "languages": "string"
+  },
   "professionalSummary": "string",
   "workExperience": [
     {
@@ -265,5 +303,86 @@ Return ONLY a valid JSON object with this exact structure:
     }
   ]
 }`;
+  }
+
+  async analyzeJob(jobDescription: string, profile?: any): Promise<any> {
+    this.logger.log('Analyzing job description for: ' + (profile ? profile.fullName : 'Generic'));
+
+    const matchingInstructions = profile ? `
+      5. "matchAnalysis": Analyze how well the candidate fits this role.
+         - "matchPercentage": estimated 0-100 score based on skills overlapping.
+         - "matchingSkills": list of skills from candidate that are relevant.
+         - "missingSkills": critical skills from job description that candidate lacks.
+         - "strengths": specific strong points in candidate profile for this job.
+         - "gaps": specific weaknesses or missing experience.
+      ` : '';
+
+    const outputSchema = `{
+          "technicalSkills": ["string"],
+          "softSkills": ["string"],
+          "experienceLevel": "string",
+          "keywords": ["string"],
+          "roleExpectations": ["string"],
+          ${profile ? `"matchAnalysis": {
+              "matchPercentage": number,
+              "matchingSkills": ["string"],
+              "missingSkills": ["string"],
+              "strengths": ["string"],
+              "gaps": ["string"]
+          }` : '"matchAnalysis": null'}
+      }`;
+
+    const prompt = `
+      Analyze the following job description to extract structured data.
+      ${profile ? 'Compare it against the provided Candidate Profile.' : ''}
+
+      JOB DESCRIPTION:
+      ${jobDescription}
+
+      ${profile ? `CANDIDATE PROFILE:
+      Skills: ${profile.skills?.map((s: any) => s.name).join(', ') || 'None'}
+      Experience: ${profile.workExperience?.map((e: any) => e.position + ' at ' + e.company).join(', ') || 'None'}
+      Summary: ${profile.professionalSummary || 'None'}
+      ` : ''}
+
+      INSTRUCTIONS:
+      1. Extract technical skills (hard skills).
+      2. Extract soft skills.
+      3. Determine experience level (Junior, Mid, Senior, Lead, etc.).
+      4. Extract 5-10 key search terms/keywords relevant to this role.
+      5. Summarize 3-5 key role expectations (what is expected from this role).
+      ${matchingInstructions}
+
+      OUTPUT FORMAT:
+      Return ONLY a valid JSON object with this exact structure:
+      ${outputSchema}
+      `;
+
+    try {
+      const model = this.configService.get<string>('OPENAI_MODEL') || 'openai/gpt-4o-mini';
+      const completion = await this.openai.chat.completions.create({
+        model,
+        max_tokens: 1200,
+        messages: [
+          { role: 'system', content: 'You are an expert HR analyst and technical recruiter. Output valid JSON only.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.3,
+        response_format: { type: 'json_object' }
+      });
+
+      const content = completion.choices[0].message.content;
+      return JSON.parse(content || '{}');
+    } catch (error) {
+      this.logger.error('Failed to analyze job', error);
+      return {
+        technicalSkills: [],
+        softSkills: [],
+        experienceLevel: 'Not specified',
+        keywords: [],
+        roleExpectations: [],
+        matchAnalysis: null
+      };
+    }
   }
 }

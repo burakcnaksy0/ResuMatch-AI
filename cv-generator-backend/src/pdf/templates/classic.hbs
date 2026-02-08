@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>CV</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            color: #000;
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #000;
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            color: #444;
+            font-size: 16px;
+            margin: 2px 0;
+            font-style: italic;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-bottom: 1px solid #000;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+
+        .item {
+            margin-bottom: 15px;
+            page-break-inside: avoid;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .item-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .item-date {
+            font-size: 14px;
+            font-style: italic;
+            color: #333;
+        }
+
+        .item-meta {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .description {
+            font-size: 14px;
+            color: #000;
+            text-align: justify;
+        }
+
+        ul {
+            margin: 5px 0 0 20px;
+            padding: 0;
+        }
+
+        li {
+            font-size: 14px;
+            color: #000;
+            margin-bottom: 4px;
+        }
+
+        .skills-section {
+            font-size: 14px;
+        }
+
+        .skill-category {
+            font-weight: bold;
+            display: inline;
+        }
+
+        .skill-list {
+            display: inline;
+        }
+
+        .grid-row {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>{{fullName}}</h1>
+        <p>{{jobTitle}} Application for {{company}}</p>
+
+        {{#if profilePictureUrl}}
+        <div style="margin-top: 15px;">
+            <!-- For classic CV, photo might be centered and smaller if included -->
+            <img src="{{profilePictureUrl}}" alt="Profile"
+                style="width: 100px; height: 100px; border-radius: 4px; object-fit: cover; border: 1px solid #000;">
+        </div>
+        {{/if}}
+        <p style="font-size: 12px; margin-top: 10px;">Generated on {{generationDate}}</p>
+    </div>
+
+    <!-- Professional Summary -->
+    <div class="section">
+        <div class="section-title">Professional Summary</div>
+        <p class="description">{{professionalSummary}}</p>
+    </div>
+
+    <!-- Work Experience -->
+    <div class="section">
+        <div class="section-title">Experience</div>
+        {{#each workExperience}}
+        <div class="item">
+            <div class="item-header">
+                <span class="item-title">{{position}}</span>
+                <span class="item-date">{{startDate}} - {{#if endDate}}{{endDate}}{{else}}Present{{/if}}</span>
+            </div>
+            <div class="item-meta">
+                {{company}}{{#if location}}, {{location}}{{/if}}
+            </div>
+            <p class="description">{{description}}</p>
+            {{#if achievements}}
+            <ul>
+                {{#each achievements}}
+                <li>{{this}}</li>
+                {{/each}}
+            </ul>
+            {{/if}}
+        </div>
+        {{/each}}
+    </div>
+
+    <!-- Skills -->
+    <div class="section">
+        <div class="section-title">Technical Skills</div>
+        <div class="skills-section">
+            {{#each skills}}
+            <div class="grid-row">
+                <span class="skill-category">{{category}}:</span>
+                <span class="skill-list">
+                    {{#each items}}{{name}}{{#unless @last}}, {{/unless}}{{/each}}
+                </span>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+
+    <!-- Education -->
+    <div class="section">
+        <div class="section-title">Education</div>
+        {{#each education}}
+        <div class="item">
+            <div class="item-header">
+                <span class="item-title">{{institution}}</span>
+                <span class="item-date">{{startDate}} - {{#if endDate}}{{endDate}}{{else}}Present{{/if}}</span>
+            </div>
+            <div class="item-meta">{{degree}} in {{fieldOfStudy}}</div>
+            {{#if description}}
+            <p class="description">{{description}}</p>
+            {{/if}}
+        </div>
+        {{/each}}
+    </div>
+
+    <!-- Projects -->
+    {{#if projects}}
+    <div class="section">
+        <div class="section-title">Key Projects</div>
+        {{#each projects}}
+        <div class="item">
+            <div class="item-header">
+                <span class="item-title">{{name}}</span>
+                {{#if url}}
+                <span class="item-date"><a href="{{url}}" style="color: #000; text-decoration: underline;">Project
+                        Link</a></span>
+                {{/if}}
+            </div>
+            <p class="description">{{description}}</p>
+            {{#if technologies}}
+            <p style="font-size: 13px; font-style: italic; margin-top: 2px;">Technologies: {{#each
+                technologies}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</p>
+            {{/if}}
+        </div>
+        {{/each}}
+    </div>
+    {{/if}}
+</body>
+
+</html>
