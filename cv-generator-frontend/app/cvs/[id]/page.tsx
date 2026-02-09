@@ -71,8 +71,10 @@ export default function CVDetailsPage() {
                     quality: 1.0,
                     pixelRatio: 2,
                     backgroundColor: '#ffffff',
-                    // cacheBust: true, // Removed as it can cause CORS issues with some CDNs
-                    skipOnError: true,
+                    skipOnError: true, // Skip elements that fail to load
+                    fetchRequestInit: {
+                        mode: 'no-cors', // Try to bypass CORS for resources
+                    },
                     width: element.scrollWidth,
                     height: element.scrollHeight,
                     style: {
@@ -93,13 +95,17 @@ export default function CVDetailsPage() {
                     }
                 } as any);
             } catch (firstError) {
-                console.warn('First attempt failed, retrying without images...', firstError);
-                // Second attempt: filter out images if they are causing issues
+                console.warn('First attempt failed (likely font/CORS issue), retrying with safe mode...', firstError);
+                // Second attempt: Safe mode - skip fonts and complicated elements
                 imgData = await toPng(element, {
                     quality: 1.0,
                     pixelRatio: 2,
                     backgroundColor: '#ffffff',
                     skipOnError: true,
+                    skipFonts: true, // Important: Skip font embedding to avoid cssRules error
+                    fetchRequestInit: {
+                        mode: 'no-cors',
+                    },
                     width: element.scrollWidth,
                     height: element.scrollHeight,
                     style: {
@@ -113,14 +119,16 @@ export default function CVDetailsPage() {
                         if (node instanceof HTMLElement && (
                             node.hasAttribute('data-html2canvas-ignore') ||
                             node.tagName === 'SCRIPT' ||
-                            node.tagName === 'IMG' // Exclude images on retry
+                            node.tagName === 'IMG' || // Exclude images on retry
+                            node.tagName === 'VIDEO' ||
+                            node.tagName === 'IFRAME'
                         )) {
                             return false;
                         }
                         return true;
                     }
                 } as any);
-                toast.error('Bazı resimler yüklenemediği için PDF resimsiz oluşturuldu.');
+                toast.error('Görünüm optimize edilerek PDF oluşturuldu (bazı yazı tipleri veya resimler eksik olabilir).');
             }
 
             console.log('Capture successful, creating PDF...');
@@ -136,12 +144,17 @@ export default function CVDetailsPage() {
             const pdfHeight = pdf.internal.pageSize.getHeight();
 
             // Add image to PDF filling the page
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            if (imgData) {
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                const safeName = (cv.profile?.fullName || 'generated-cv').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                pdf.save(`${safeName}.pdf`);
 
-            pdf.save(`cv-${cv.profile?.fullName || 'generated'}.pdf`);
+                toast.dismiss(toastId);
+                toast.success('PDF İndirildi');
+            } else {
+                throw new Error('Görüntü verisi oluşturulamadı.');
+            }
 
-            toast.dismiss(toastId);
-            toast.success('PDF İndirildi');
         } catch (error: any) {
             console.error('Failed to generate PDF Full Error:', error);
             if (error && typeof error === 'object') {
