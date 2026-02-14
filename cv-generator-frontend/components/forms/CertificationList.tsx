@@ -7,6 +7,7 @@ import { certificationApi } from '@/lib/api/client';
 import toast from 'react-hot-toast';
 import { useState, useEffect } from 'react';
 import { Certification } from '@/types';
+import { Award, Calendar, Link as LinkIcon, Trash2, Edit3, Plus, X } from 'lucide-react';
 
 interface CertificationListProps {
     profileId: string;
@@ -46,63 +47,77 @@ export default function CertificationList({ profileId, certifications: initialCe
     return (
         <div className="space-y-6">
             {!profileId && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <p className="text-yellow-800">
+                <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-4">
+                    <p className="text-amber-200 flex items-center gap-2">
                         ⚠️ Please create your profile first by filling in the Personal Info tab before adding certifications.
                     </p>
                 </div>
             )}
 
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold">Certifications</h2>
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                    <Award className="w-6 h-6 text-[#3b82f6]" />
+                    Certifications
+                </h2>
                 <button
                     onClick={() => setIsAdding(true)}
                     disabled={!profileId}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg shadow-blue-900/20 transition-all font-medium"
                 >
-                    + Add Certification
+                    <Plus className="w-4 h-4" />
+                    Add Certification
                 </button>
             </div>
 
             <div className="space-y-4">
                 {certifications.map((cert) => (
-                    <div key={cert.id} className="border border-gray-200 rounded-lg p-4">
+                    <div key={cert.id} className="bg-[#181c24] border border-[#232a36] rounded-xl overflow-hidden hover:border-[#3b82f6]/50 transition-all shadow-sm">
                         {editingId === cert.id ? (
-                            <CertificationForm
-                                profileId={profileId}
-                                initialData={cert}
-                                certificationId={cert.id}
-                                onSuccess={() => {
-                                    setEditingId(null);
-                                    handleUpdate();
-                                }}
-                                onCancel={() => setEditingId(null)}
-                            />
+                            <div className="p-6">
+                                <CertificationForm
+                                    profileId={profileId}
+                                    initialData={cert}
+                                    certificationId={cert.id}
+                                    onSuccess={() => {
+                                        setEditingId(null);
+                                        handleUpdate();
+                                    }}
+                                    onCancel={() => setEditingId(null)}
+                                />
+                            </div>
                         ) : (
-                            <div>
+                            <div className="p-6">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <h3 className="font-semibold text-lg text-gray-900">{cert.name}</h3>
-                                        <p className="text-gray-800 font-medium">{cert.issuer}</p>
-                                        <p className="text-sm text-gray-600">
-                                            Issued: {new Date(cert.issueDate).toLocaleDateString()}
-                                            {cert.expiryDate && ` • Expires: ${new Date(cert.expiryDate).toLocaleDateString()}`}
-                                        </p>
-                                        {cert.credentialId && <p className="text-sm text-gray-700 mt-1">ID: {cert.credentialId}</p>}
+                                        <h3 className="font-bold text-lg text-white mb-1">{cert.name}</h3>
+                                        <p className="text-blue-200 font-medium">{cert.issuer}</p>
+
+                                        <div className="flex items-center gap-2 text-sm text-gray-500 mt-2">
+                                            <Calendar className="w-4 h-4" />
+                                            <span>
+                                                Issued: {new Date(cert.issueDate).toLocaleDateString()}
+                                                {cert.expiryDate && ` • Expires: ${new Date(cert.expiryDate).toLocaleDateString()}`}
+                                            </span>
+                                        </div>
+
+                                        {cert.credentialId && <p className="text-sm text-gray-400 mt-2 font-mono bg-[#232a36] px-2 py-1 rounded inline-block border border-[#2a3241]">ID: {cert.credentialId}</p>}
+
                                         {cert.credentialUrl && (
-                                            <a
-                                                href={cert.credentialUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-sm text-blue-600 hover:underline mt-1 inline-block"
-                                            >
-                                                View Credential →
-                                            </a>
+                                            <div className="mt-3">
+                                                <a
+                                                    href={cert.credentialUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-sm text-blue-400 hover:text-blue-300 inline-flex items-center gap-1 transition-colors"
+                                                >
+                                                    <LinkIcon className="w-3 h-3" /> View Credential
+                                                </a>
+                                            </div>
                                         )}
                                     </div>
-                                    <div className="flex gap-2">
-                                        <button onClick={() => setEditingId(cert.id)} className="text-blue-600 hover:text-blue-700 text-sm">
-                                            Edit
+                                    <div className="flex gap-2 ml-4">
+                                        <button onClick={() => setEditingId(cert.id)} className="p-2 text-blue-400 hover:bg-[#232a36] rounded-lg transition-colors" title="Edit">
+                                            <Edit3 className="w-4 h-4" />
                                         </button>
                                         <button
                                             onClick={async () => {
@@ -116,9 +131,10 @@ export default function CertificationList({ profileId, certifications: initialCe
                                                     }
                                                 }
                                             }}
-                                            className="text-red-600 hover:text-red-700 text-sm"
+                                            className="p-2 text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
+                                            title="Delete"
                                         >
-                                            Delete
+                                            <Trash2 className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </div>
@@ -129,8 +145,16 @@ export default function CertificationList({ profileId, certifications: initialCe
             </div>
 
             {isAdding && (
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                    <h3 className="font-semibold mb-4">Add New Certification</h3>
+                <div className="bg-[#181c24] border border-[#3b82f6] rounded-xl p-6 shadow-lg shadow-blue-900/10 relative">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="font-bold text-white text-lg">Add New Certification</h3>
+                        <button
+                            onClick={() => setIsAdding(false)}
+                            className="p-2 hover:bg-[#232a36] rounded-lg text-gray-400 hover:text-white transition-colors"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
                     <CertificationForm
                         profileId={profileId}
                         onSuccess={() => {
@@ -143,7 +167,21 @@ export default function CertificationList({ profileId, certifications: initialCe
             )}
 
             {certifications.length === 0 && !isAdding && (
-                <p className="text-gray-500 text-center py-8">No certifications yet.</p>
+                <div className="text-center py-12 bg-[#181c24] rounded-xl border border-[#232a36] border-dashed">
+                    <div className="w-16 h-16 bg-[#232a36] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Award className="w-8 h-8 text-gray-500" />
+                    </div>
+                    <p className="text-gray-400 text-lg mb-2">No certifications yet</p>
+                    <p className="text-gray-500 text-sm mb-6">Add your professional certifications</p>
+                    <button
+                        onClick={() => setIsAdding(true)}
+                        disabled={!profileId}
+                        className="px-6 py-2 bg-[#232a36] text-blue-400 hover:text-blue-300 hover:bg-[#2a3241] rounded-xl transition-all font-medium inline-flex items-center gap-2"
+                    >
+                        <Plus className="w-4 h-4" />
+                        Add Certification
+                    </button>
+                </div>
             )}
         </div>
     );
@@ -182,11 +220,10 @@ function CertificationForm({ profileId, initialData, certificationId, onSuccess,
         try {
             if (certificationId) {
                 await certificationApi.update(certificationId, data);
-                toast.success('Certification updated!');
             } else {
                 await certificationApi.create(data);
-                toast.success('Certification added!');
             }
+            toast.success(certificationId ? 'Certification updated!' : 'Certification added!');
             onSuccess?.();
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Failed to save');
@@ -195,88 +232,91 @@ function CertificationForm({ profileId, initialData, certificationId, onSuccess,
         }
     };
 
+    const inputClasses = "w-full px-4 py-2 bg-[#232a36] border border-[#2a3241] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent transition-all";
+    const labelClasses = "block text-sm font-medium text-blue-200 mb-1";
+
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Certification Name *</label>
+                    <label className={labelClasses}>Certification Name *</label>
                     <input
                         {...register('name')}
                         type="text"
-                        className="w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className={inputClasses}
                         placeholder="AWS Certified Solutions Architect"
                     />
-                    {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
+                    {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name.message}</p>}
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Issuer *</label>
+                    <label className={labelClasses}>Issuer *</label>
                     <input
                         {...register('issuer')}
                         type="text"
-                        className="w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className={inputClasses}
                         placeholder="Amazon Web Services"
                     />
-                    {errors.issuer && <p className="text-red-500 text-sm mt-1">{errors.issuer.message}</p>}
+                    {errors.issuer && <p className="text-red-400 text-sm mt-1">{errors.issuer.message}</p>}
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Issue Date *</label>
+                    <label className={labelClasses}>Issue Date *</label>
                     <input
                         {...register('issueDate')}
                         type="date"
-                        className="w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className={inputClasses}
                     />
-                    {errors.issueDate && <p className="text-red-500 text-sm mt-1">{errors.issueDate.message}</p>}
+                    {errors.issueDate && <p className="text-red-400 text-sm mt-1">{errors.issueDate.message}</p>}
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                    <label className={labelClasses}>Expiry Date</label>
                     <input
                         {...register('expiryDate')}
                         type="date"
-                        className="w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className={inputClasses}
                     />
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Credential ID</label>
+                    <label className={labelClasses}>Credential ID</label>
                     <input
                         {...register('credentialId')}
                         type="text"
-                        className="w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className={inputClasses}
                         placeholder="ABC123XYZ"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Credential URL</label>
+                    <label className={labelClasses}>Credential URL</label>
                     <input
                         {...register('credentialUrl')}
                         type="url"
-                        className="w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className={inputClasses}
                         placeholder="https://..."
                     />
-                    {errors.credentialUrl && <p className="text-red-500 text-sm mt-1">{errors.credentialUrl.message}</p>}
+                    {errors.credentialUrl && <p className="text-red-400 text-sm mt-1">{errors.credentialUrl.message}</p>}
                 </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-2">
+            <div className="flex justify-end gap-3 pt-4 border-t border-[#232a36]">
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                    className="px-4 py-2 text-blue-200 bg-[#232a36] rounded-xl hover:bg-[#2a3241] transition-colors"
                     disabled={isSubmitting}
                 >
                     Cancel
                 </button>
                 <button
                     type="submit"
-                    className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                    className="px-6 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-lg shadow-blue-900/20"
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? 'Saving...' : certificationId ? 'Update' : 'Add'}

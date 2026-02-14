@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import {
     User,
     FileText,
@@ -19,11 +20,14 @@ import {
     Target,
     Award,
     BarChart3,
-    AlertCircle
+    AlertCircle,
+    Crown,
+    Rocket
 } from 'lucide-react';
 
 export default function DashboardPage() {
     const { user, isLoading } = useAuth();
+    const { subscription, loading: subscriptionLoading } = useSubscription();
     const router = useRouter();
 
     // Removed automatic redirect for unverified users per user request
@@ -37,10 +41,32 @@ export default function DashboardPage() {
         successRate: 0
     });
 
-    const [recentActivity, setRecentActivity] = useState<any[]>([
-        // Mock data
-        // { id: 1, type: 'cv_generated', title: 'Software Engineer CV', date: '2 hours ago' },
-        // { id: 2, type: 'profile_updated', title: 'Updated Skills', date: '1 day ago' },
+    const [recentCVs, setRecentCVs] = useState<any[]>([
+        // Mock data - bu gerçek API'den gelecek
+        {
+            id: 1,
+            jobTitle: 'Senior Frontend Developer',
+            company: 'TechCorp Inc.',
+            createdAt: '2 saat önce',
+            status: 'active',
+            views: 12
+        },
+        {
+            id: 2,
+            jobTitle: 'Full Stack Engineer',
+            company: 'StartupXYZ',
+            createdAt: '1 gün önce',
+            status: 'downloaded',
+            views: 5
+        },
+        {
+            id: 3,
+            jobTitle: 'React Developer',
+            company: 'Digital Agency',
+            createdAt: '3 gün önce',
+            status: 'active',
+            views: 8
+        },
     ]);
 
     const quickActions = [
@@ -124,38 +150,38 @@ export default function DashboardPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30">
+        <div className="min-h-screen bg-gradient-to-br from-[#181c24] via-[#232a36] to-[#10131a] text-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}
                 <div className="mb-8">
                     <div className="flex items-center justify-between flex-wrap gap-4 mb-4">
                         <div>
-                            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                                Welcome back! 👋
+                            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                                Tekrar hoş geldin! 👋
                             </h1>
-                            <p className="text-lg text-gray-600">
-                                Ready to create your next job-winning CV?
+                            <p className="text-lg text-blue-200">
+                                Bir sonraki iş kazandıran CV'ni oluşturmaya hazır mısın?
                             </p>
                         </div>
                         <Link
                             href="/generate"
-                            className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg shadow-blue-200 hover:shadow-xl hover:shadow-blue-300"
+                            className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3b82f6] to-[#6366f1] text-white font-semibold rounded-xl hover:from-[#2563eb] hover:to-[#4f46e5] transition-all duration-200 shadow-lg shadow-blue-900 hover:shadow-xl hover:shadow-blue-800"
                         >
                             <Plus className="w-5 h-5" />
-                            <span>Generate New CV</span>
+                            <span>Yeni CV Oluştur</span>
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </Link>
                     </div>
 
                     {!isLoading && user && !user.emailVerified && (
-                        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-md">
+                        <div className="bg-yellow-900/30 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-md">
                             <div className="flex">
                                 <div className="flex-shrink-0">
                                     <AlertCircle className="h-5 w-5 text-yellow-400" aria-hidden="true" />
                                 </div>
                                 <div className="ml-3">
-                                    <p className="text-sm text-yellow-700">
-                                        Your email is not verified. Some features may be restricted. Please <Link href="/auth/verify-email" className="font-medium underline hover:text-yellow-600">verify your email</Link>.
+                                    <p className="text-sm text-yellow-200">
+                                        E-posta adresin doğrulanmadı. Bazı özellikler kısıtlanmış olabilir. Lütfen <Link href="/auth/verify-email" className="font-medium underline hover:text-yellow-300">e-postanı doğrula</Link>.
                                     </p>
                                 </div>
                             </div>
@@ -168,21 +194,21 @@ export default function DashboardPage() {
                     {statsCards.map((stat, index) => (
                         <div
                             key={index}
-                            className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-200"
+                            className="bg-[#232a36] rounded-2xl p-6 border border-[#232a36] hover:border-[#3b82f6] hover:shadow-lg transition-all duration-200"
                         >
                             <div className="flex items-start justify-between mb-4">
-                                <div className={`p-3 ${stat.bgColor} rounded-xl`}>
-                                    <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                                <div className={`p-3 bg-[#181c24] rounded-xl`}>
+                                    <stat.icon className={`w-6 h-6 text-[#3b82f6]`} />
                                 </div>
-                                <div className={`text-xs font-medium px-2 py-1 rounded-full ${stat.trendUp ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                                <div className={`text-xs font-medium px-2 py-1 rounded-full ${stat.trendUp ? 'bg-green-900/30 text-green-300' : 'bg-red-900/30 text-red-300'
                                     }`}>
                                     {stat.trend}
                                 </div>
                             </div>
-                            <div className="text-3xl font-bold text-gray-900 mb-1">
+                            <div className="text-3xl font-bold text-white mb-1">
                                 {stat.value}
                             </div>
-                            <div className="text-sm text-gray-600">
+                            <div className="text-sm text-blue-200">
                                 {stat.label}
                             </div>
                         </div>
@@ -191,13 +217,13 @@ export default function DashboardPage() {
 
                 {/* Quick Actions */}
                 <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
+                    <h2 className="text-2xl font-bold text-white mb-6">Hızlı İşlemler</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {quickActions.map((action, index) => (
                             <Link
                                 key={index}
                                 href={action.href}
-                                className={`group relative bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-transparent hover:shadow-2xl transition-all duration-300 overflow-hidden ${action.featured ? 'md:col-span-1 ring-2 ring-purple-200' : ''
+                                className={`group relative bg-[#232a36] rounded-2xl p-8 border-2 border-[#232a36] hover:border-[#3b82f6] hover:shadow-2xl transition-all duration-300 overflow-hidden ${action.featured ? 'md:col-span-1 ring-2 ring-[#6366f1]' : ''}
                                     }`}
                             >
                                 {/* Gradient Background on Hover */}
@@ -207,31 +233,31 @@ export default function DashboardPage() {
                                 <div className="relative z-10">
                                     {/* Icon and Badge */}
                                     <div className="flex items-start justify-between mb-6">
-                                        <div className={`p-4 ${action.iconBg} rounded-2xl group-hover:scale-110 transition-transform duration-300`}>
-                                            <action.icon className={`w-8 h-8 ${action.iconColor}`} />
+                                        <div className={`p-4 bg-[#181c24] rounded-2xl group-hover:scale-110 transition-transform duration-300`}>
+                                            <action.icon className={`w-8 h-8 text-[#3b82f6]`} />
                                         </div>
                                         {action.badge && (
-                                            <span className={`text-xs font-semibold px-3 py-1 rounded-full ${action.badgeColor}`}>
+                                            <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-blue-900/30 text-blue-200`}>
                                                 {action.badge}
                                             </span>
                                         )}
                                         {action.featured && (
-                                            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-purple-100 text-purple-700">
-                                                ⚡ Popular
+                                            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#6366f1] text-white">
+                                                ⚡ Popüler
                                             </span>
                                         )}
                                     </div>
 
                                     {/* Title and Description */}
-                                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-gray-900">
+                                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-white">
                                         {action.title}
                                     </h3>
-                                    <p className="text-gray-600 mb-6 leading-relaxed">
+                                    <p className="text-blue-200 mb-6 leading-relaxed">
                                         {action.description}
                                     </p>
 
                                     {/* Action Link */}
-                                    <div className="flex items-center gap-2 text-blue-600 font-semibold group-hover:gap-3 transition-all">
+                                    <div className="flex items-center gap-2 text-[#3b82f6] font-semibold group-hover:gap-3 transition-all">
                                         <span>{action.action}</span>
                                         <ArrowRight className="w-5 h-5" />
                                     </div>
@@ -239,76 +265,99 @@ export default function DashboardPage() {
 
                                 {/* Decorative Element */}
                                 {action.featured && (
-                                    <div className="absolute -bottom-2 -right-2 w-24 h-24 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full opacity-20 group-hover:scale-150 transition-transform duration-500" />
+                                    <div className="absolute -bottom-2 -right-2 w-24 h-24 bg-gradient-to-br from-[#6366f1] to-[#3b82f6] rounded-full opacity-20 group-hover:scale-150 transition-transform duration-500" />
                                 )}
                             </Link>
                         ))}
                     </div>
                 </div>
 
-                {/* Recent Activity / Getting Started */}
+                {/* Recent CVs / Getting Started */}
                 <div className="grid lg:grid-cols-3 gap-6">
-                    {/* Recent Activity */}
-                    <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-8">
+                    {/* Recent CVs */}
+                    <div className="lg:col-span-2 bg-[#232a36] rounded-2xl border border-[#232a36] p-8">
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-blue-50 rounded-lg">
-                                    <Clock className="w-5 h-5 text-blue-600" />
+                                <div className="p-2 bg-[#181c24] rounded-lg">
+                                    <FileText className="w-5 h-5 text-[#3b82f6]" />
                                 </div>
-                                <h2 className="text-2xl font-bold text-gray-900">Recent Activity</h2>
+                                <h2 className="text-2xl font-bold text-white">Son CV'lerim</h2>
                             </div>
-                            {recentActivity.length > 0 && (
-                                <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-                                    View All
-                                </button>
+                            {recentCVs.length > 0 && (
+                                <Link href="/cvs" className="text-sm text-[#3b82f6] hover:text-[#2563eb] font-medium flex items-center gap-1">
+                                    Tümünü Gör
+                                    <ArrowRight className="w-4 h-4" />
+                                </Link>
                             )}
                         </div>
 
-                        {recentActivity.length > 0 ? (
-                            <div className="space-y-4">
-                                {recentActivity.map((activity) => (
-                                    <div
-                                        key={activity.id}
-                                        className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+                        {recentCVs.length > 0 ? (
+                            <div className="space-y-3">
+                                {recentCVs.map((cv) => (
+                                    <Link
+                                        key={cv.id}
+                                        href={`/cvs/${cv.id}`}
+                                        className="group flex items-center gap-4 p-5 bg-[#181c24] rounded-xl hover:bg-[#232a36] hover:border hover:border-[#3b82f6] transition-all duration-200"
                                     >
-                                        <div className="p-2 bg-white rounded-lg">
-                                            {activity.type === 'cv_generated' ? (
-                                                <FileText className="w-5 h-5 text-blue-600" />
-                                            ) : (
-                                                <User className="w-5 h-5 text-purple-600" />
-                                            )}
+                                        <div className="p-3 bg-[#232a36] group-hover:bg-[#3b82f6] rounded-lg transition-colors">
+                                            <FileText className="w-6 h-6 text-[#3b82f6] group-hover:text-white" />
                                         </div>
-                                        <div className="flex-1">
-                                            <p className="font-medium text-gray-900">{activity.title}</p>
-                                            <p className="text-sm text-gray-600">{activity.date}</p>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-semibold text-white text-base mb-1 truncate">{cv.jobTitle}</p>
+                                            <div className="flex items-center gap-3 text-sm text-blue-200">
+                                                <span className="truncate">{cv.company}</span>
+                                                <span className="text-blue-300">•</span>
+                                                <span className="flex items-center gap-1">
+                                                    <Eye className="w-3.5 h-3.5" />
+                                                    {cv.views} görüntülenme
+                                                </span>
+                                            </div>
                                         </div>
-                                        <ArrowRight className="w-5 h-5 text-gray-400" />
-                                    </div>
+                                        <div className="flex flex-col items-end gap-2">
+                                            <span className={`text-xs font-medium px-3 py-1 rounded-full ${
+                                                cv.status === 'downloaded'
+                                                    ? 'bg-green-900/30 text-green-300'
+                                                    : 'bg-blue-900/30 text-blue-300'
+                                            }`}>
+                                                {cv.status === 'downloaded' ? (
+                                                    <span className="flex items-center gap-1">
+                                                        <Download className="w-3 h-3" />
+                                                        İndirildi
+                                                    </span>
+                                                ) : (
+                                                    'Aktif'
+                                                )}
+                                            </span>
+                                            <span className="text-xs text-blue-300">{cv.createdAt}</span>
+                                        </div>
+                                        <ArrowRight className="w-5 h-5 text-blue-300 group-hover:text-[#3b82f6] group-hover:translate-x-1 transition-all" />
+                                    </Link>
                                 ))}
                             </div>
                         ) : (
                             <div className="text-center py-12">
-                                <div className="w-20 h-20 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <BarChart3 className="w-10 h-10 text-blue-400" />
+                                <div className="w-20 h-20 bg-gradient-to-br from-[#3b82f6] to-[#6366f1] rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <FileText className="w-10 h-10 text-white" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                                    No activity yet
+                                <h3 className="text-lg font-semibold text-white mb-2">
+                                    Henüz CV oluşturmadın
                                 </h3>
-                                <p className="text-gray-600 mb-6">
-                                    Start by creating your master CV profile or generating your first CV
+                                <p className="text-blue-200 mb-6">
+                                    İlk CV'ni oluşturarak başla ve hayalindeki işe bir adım daha yaklaş
                                 </p>
                                 <div className="flex items-center justify-center gap-3">
                                     <Link
                                         href="/profile"
-                                        className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                                        className="px-4 py-2 text-sm font-medium text-[#3b82f6] bg-[#181c24] rounded-lg hover:bg-[#232a36] transition-colors"
                                     >
-                                        Edit Profile
+                                        Profili Düzenle
                                     </Link>
                                     <Link
                                         href="/jobs"
-                                        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#3b82f6] to-[#6366f1] rounded-lg hover:from-[#2563eb] hover:to-[#4f46e5] transition-all"
                                     >
-                                        Generate CV
+                                        <Sparkles className="w-4 h-4" />
+                                        CV Oluştur
                                     </Link>
                                 </div>
                             </div>
@@ -317,42 +366,132 @@ export default function DashboardPage() {
 
                     {/* Tips & Resources */}
                     <div className="space-y-6">
+                        {/* Subscription Status Card */}
+                        {!subscriptionLoading && subscription && (
+                            <div className={`rounded-2xl p-6 border-2 ${
+                                subscription.subscriptionType === 'PRO' && subscription.isActive
+                                    ? 'bg-gradient-to-br from-amber-500 to-orange-500 border-amber-400'
+                                    : 'bg-[#232a36] border-[#232a36]'
+                            }`}>
+                                <div className="flex items-center gap-2 mb-4">
+                                    {subscription.subscriptionType === 'PRO' && subscription.isActive ? (
+                                        <>
+                                            <Crown className="w-5 h-5 text-white" />
+                                            <h3 className="font-bold text-lg text-white">Pro Üye</h3>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Rocket className="w-5 h-5 text-[#3b82f6]" />
+                                            <h3 className="font-bold text-lg text-white">Free Plan</h3>
+                                        </>
+                                    )}
+                                </div>
+
+                                {subscription.subscriptionType === 'PRO' && subscription.isActive ? (
+                                    <div>
+                                        <p className="text-white/90 text-sm mb-4">
+                                            Sınırsız CV oluşturma hakkına sahipsin!
+                                        </p>
+                                        {subscription.subscriptionEndDate && (
+                                            <p className="text-xs text-white/70">
+                                                Bitiş: {new Date(subscription.subscriptionEndDate).toLocaleDateString('tr-TR')}
+                                            </p>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <div className="space-y-3 mb-4">
+                                            <div className="bg-[#181c24] rounded-lg p-3">
+                                                <div className="flex items-center justify-between mb-1">
+                                                    <span className="text-sm text-blue-200">İş bazlı CV</span>
+                                                    <span className="text-sm font-semibold text-white">
+                                                        {subscription.usage.jobBasedCVs.remaining} / {subscription.usage.jobBasedCVs.limit} kaldı
+                                                    </span>
+                                                </div>
+                                                <div className="w-full bg-[#232a36] rounded-full h-2">
+                                                    <div
+                                                        className={`h-full rounded-full transition-all ${
+                                                            (subscription.usage.jobBasedCVs.remaining ?? 0) === 0
+                                                                ? 'bg-red-500'
+                                                                : 'bg-blue-500'
+                                                        }`}
+                                                        style={{
+                                                            width: `${((subscription.usage.jobBasedCVs.remaining ?? 0) / (subscription.usage.jobBasedCVs.limit ?? 1)) * 100}%`
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="bg-[#181c24] rounded-lg p-3">
+                                                <div className="flex items-center justify-between mb-1">
+                                                    <span className="text-sm text-blue-200">Profil bazlı CV</span>
+                                                    <span className="text-sm font-semibold text-white">
+                                                        {subscription.usage.profileBasedCVs.remaining} / {subscription.usage.profileBasedCVs.limit} kaldı
+                                                    </span>
+                                                </div>
+                                                <div className="w-full bg-[#232a36] rounded-full h-2">
+                                                    <div
+                                                        className={`h-full rounded-full transition-all ${
+                                                            (subscription.usage.profileBasedCVs.remaining ?? 0) === 0
+                                                                ? 'bg-red-500'
+                                                                : 'bg-purple-500'
+                                                        }`}
+                                                        style={{
+                                                            width: `${((subscription.usage.profileBasedCVs.remaining ?? 0) / (subscription.usage.profileBasedCVs.limit ?? 1)) * 100}%`
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <Link
+                                            href="/pricing"
+                                            className="block w-full text-center px-4 py-2.5 bg-gradient-to-r from-[#3b82f6] to-[#6366f1] text-white text-sm font-semibold rounded-lg hover:from-[#2563eb] hover:to-[#4f46e5] transition-all"
+                                        >
+                                            <div className="flex items-center justify-center gap-2">
+                                                <Crown className="w-4 h-4" />
+                                                Pro'ya Yükselt
+                                            </div>
+                                        </Link>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         {/* Pro Tip Card */}
-                        <div className="bg-gradient-to-br from-purple-600 to-indigo-600 rounded-2xl p-6 text-white">
+                        <div className="bg-gradient-to-br from-[#6366f1] to-[#3b82f6] rounded-2xl p-6 text-white">
                             <div className="flex items-center gap-2 mb-4">
                                 <Zap className="w-5 h-5" />
                                 <h3 className="font-bold text-lg">Pro Tip</h3>
                             </div>
-                            <p className="text-purple-100 text-sm leading-relaxed mb-4">
-                                Complete your profile to 100% for the best AI-generated CVs. The more information you provide, the better results you'll get!
+                            <p className="text-blue-100 text-sm leading-relaxed mb-4">
+                                Profilini %100 tamamla, en iyi AI destekli CV'leri elde et. Ne kadar çok bilgi verirsen, sonuçlar o kadar iyi olur!
                             </p>
                             <Link
                                 href="/profile"
-                                className="inline-flex items-center gap-2 text-sm font-semibold text-white hover:text-purple-100 transition-colors"
+                                className="inline-flex items-center gap-2 text-sm font-semibold text-white hover:text-blue-100 transition-colors"
                             >
-                                Complete Profile
+                                Profili Tamamla
                                 <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
 
                         {/* Resources Card */}
-                        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+                        <div className="bg-[#232a36] rounded-2xl border border-[#232a36] p-6">
                             <div className="flex items-center gap-2 mb-4">
-                                <Award className="w-5 h-5 text-amber-600" />
-                                <h3 className="font-bold text-lg text-gray-900">Resources</h3>
+                                <Award className="w-5 h-5 text-yellow-400" />
+                                <h3 className="font-bold text-lg text-white">Kaynaklar</h3>
                             </div>
                             <div className="space-y-3">
-                                <a href="#" className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group">
-                                    <span className="text-sm font-medium text-gray-700">CV Writing Guide</span>
-                                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
+                                <a href="#" className="flex items-center justify-between p-3 bg-[#181c24] rounded-lg hover:bg-[#232a36] transition-colors group">
+                                    <span className="text-sm font-medium text-blue-200">CV Hazırlama Rehberi</span>
+                                    <ArrowRight className="w-4 h-4 text-blue-200 group-hover:text-white" />
                                 </a>
-                                <a href="#" className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group">
-                                    <span className="text-sm font-medium text-gray-700">Interview Tips</span>
-                                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
+                                <a href="#" className="flex items-center justify-between p-3 bg-[#181c24] rounded-lg hover:bg-[#232a36] transition-colors group">
+                                    <span className="text-sm font-medium text-blue-200">Mülakat Tüyoları</span>
+                                    <ArrowRight className="w-4 h-4 text-blue-200 group-hover:text-white" />
                                 </a>
-                                <a href="#" className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group">
-                                    <span className="text-sm font-medium text-gray-700">ATS Optimization</span>
-                                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
+                                <a href="#" className="flex items-center justify-between p-3 bg-[#181c24] rounded-lg hover:bg-[#232a36] transition-colors group">
+                                    <span className="text-sm font-medium text-blue-200">ATS Optimizasyonu</span>
+                                    <ArrowRight className="w-4 h-4 text-blue-200 group-hover:text-white" />
                                 </a>
                             </div>
                         </div>

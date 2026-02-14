@@ -19,9 +19,9 @@ export default function Navbar() {
     }
 
     return (
-        <header className="px-6 lg:px-8 h-20 flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100 shadow-sm">
+        <header className="px-6 lg:px-8 h-20 flex items-center justify-between bg-[#181c24]/90 backdrop-blur-md sticky top-0 z-50 border-b border-[#232a36] shadow-sm">
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <div className="relative w-10 h-10 overflow-hidden rounded-xl shadow-sm border border-blue-100 bg-white">
+                <div className="relative w-10 h-10 overflow-hidden rounded-xl shadow-sm border border-[#3b82f6] bg-[#232a36]">
                     <Image
                         src="/logo.png"
                         alt={APP_NAME}
@@ -29,7 +29,7 @@ export default function Navbar() {
                         className="object-cover"
                     />
                 </div>
-                <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-700">
+                <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#3b82f6] to-[#6366f1]">
                     {APP_NAME}
                 </span>
             </Link>
@@ -40,8 +40,8 @@ export default function Navbar() {
                         <Link
                             href="/dashboard"
                             className={`text-sm font-medium transition-colors ${pathname === '/dashboard'
-                                ? 'text-blue-600'
-                                : 'text-gray-600 hover:text-blue-600'
+                                ? 'text-[#3b82f6]'
+                                : 'text-blue-200 hover:text-[#3b82f6]'
                                 }`}
                         >
                             Dashboard
@@ -49,8 +49,8 @@ export default function Navbar() {
                         <Link
                             href="/profile"
                             className={`text-sm font-medium transition-colors ${pathname === '/profile'
-                                ? 'text-blue-600'
-                                : 'text-gray-600 hover:text-blue-600'
+                                ? 'text-[#3b82f6]'
+                                : 'text-blue-200 hover:text-[#3b82f6]'
                                 }`}
                         >
                             Profile
@@ -58,8 +58,8 @@ export default function Navbar() {
                         <Link
                             href="/jobs"
                             className={`text-sm font-medium transition-colors ${pathname === '/jobs'
-                                ? 'text-blue-600'
-                                : 'text-gray-600 hover:text-blue-600'
+                                ? 'text-[#3b82f6]'
+                                : 'text-blue-200 hover:text-[#3b82f6]'
                                 }`}
                         >
                             Jobs
@@ -67,8 +67,8 @@ export default function Navbar() {
                         <Link
                             href="/cvs"
                             className={`text-sm font-medium transition-colors ${pathname === '/cvs'
-                                ? 'text-blue-600'
-                                : 'text-gray-600 hover:text-blue-600'
+                                ? 'text-[#3b82f6]'
+                                : 'text-blue-200 hover:text-[#3b82f6]'
                                 }`}
                         >
                             My CVs
@@ -82,13 +82,13 @@ export default function Navbar() {
                     isAuthenticated ? (
                         <div className="flex items-center gap-4">
                             {user?.email && (
-                                <span className="hidden sm:block text-sm text-gray-600 font-medium">
+                                <span className="hidden sm:block text-sm text-blue-200 font-medium">
                                     {user.email}
                                 </span>
                             )}
                             <button
                                 onClick={logout}
-                                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-red-600 rounded-full hover:bg-red-700 transition-all shadow-lg shadow-red-200"
+                                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-red-600 rounded-full hover:bg-red-700 transition-all shadow-lg shadow-red-900"
                             >
                                 <LogOut className="w-4 h-4" />
                                 Logout
@@ -98,13 +98,13 @@ export default function Navbar() {
                         <>
                             <Link
                                 href="/auth/login"
-                                className="hidden sm:block text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors"
+                                className="hidden sm:block text-sm font-semibold text-blue-200 hover:text-[#3b82f6] transition-colors"
                             >
                                 Login
                             </Link>
                             <Link
                                 href="/auth/register"
-                                className="px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+                                className="px-5 py-2.5 text-sm font-semibold text-white bg-[#3b82f6] rounded-full hover:bg-[#2563eb] transition-all shadow-lg shadow-blue-900"
                             >
                                 Register
                             </Link>

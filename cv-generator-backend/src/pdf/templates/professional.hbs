@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>{{fullName}} - CV</title>
+    <style>
+        @page {
+            margin: 0;
+            size: A4;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Georgia', serif;
+            /* Serif for professional look */
+            background: #fff;
+            color: #333;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .container {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            background-color: #1e3a8a;
+            /* Navy Blue */
+            color: #fff;
+            padding: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content h1 {
+            font-family: 'Arial', sans-serif;
+            font-size: 32px;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header-content p {
+            margin: 5px 0 0 0;
+            font-size: 16px;
+            opacity: 0.9;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .header-contact {
+            text-align: right;
+            font-size: 12px;
+            line-height: 1.5;
+            opacity: 0.9;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Layout */
+        .content-wrapper {
+            display: flex;
+            padding: 40px;
+            gap: 40px;
+        }
+
+        .main-col {
+            width: 65%;
+        }
+
+        .side-col {
+            width: 35%;
+            border-left: 1px solid #e5e7eb;
+            padding-left: 30px;
+        }
+
+        /* Sections */
+        h2 {
+            font-family: 'Arial', sans-serif;
+            font-size: 16px;
+            color: #1e3a8a;
+            text-transform: uppercase;
+            border-bottom: 2px solid #1e3a8a;
+            padding-bottom: 5px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        /* Entries */
+        .entry {
+            margin-bottom: 25px;
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .entry-title {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .entry-subtitle {
+            font-weight: 600;
+            color: #4b5563;
+            font-size: 13px;
+        }
+
+        .entry-date {
+            font-size: 12px;
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .entry-desc {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #374151;
+            margin-top: 5px;
+        }
+
+        /* Sidebar items */
+        .side-item {
+            margin-bottom: 20px;
+        }
+
+        .skill-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .skill-list li {
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #374151;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .skill-cat {
+            font-weight: 700;
+            color: #1e3a8a;
+            font-size: 12px;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* Summary */
+        .summary {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #374151;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>{{fullName}}</h1>
+                <p>{{jobTitle}}</p>
+            </div>
+            <div class="header-contact">
+                <div>{{email}}</div>
+                {{#if phone}}<div>{{phone}}</div>{{/if}}
+                {{#if location}}<div>{{location}}</div>{{/if}}
+                {{#if linkedin}}<div>{{linkedin}}</div>{{/if}}
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="main-col">
+                {{#if professionalSummary}}
+                <div class="summary">
+                    {{professionalSummary}}
+                </div>
+                {{/if}}
+
+                <h2>Experience</h2>
+                {{#each workExperience}}
+                <div class="entry">
+                    <div class="entry-header">
+                        <span class="entry-title">{{position}}</span>
+                        <span class="entry-date">{{startDate}} - {{#if endDate}}{{endDate}}{{else}}Present{{/if}}</span>
+                    </div>
+                    <div class="entry-subtitle">{{company}}</div>
+                    <div class="entry-desc">{{description}}</div>
+                </div>
+                {{/each}}
+
+                <h2>Projects</h2>
+                {{#each projects}}
+                <div class="entry">
+                    <div class="entry-header">
+                        <span class="entry-title">{{name}}</span>
+                    </div>
+                    <div class="entry-desc">{{description}}</div>
+                </div>
+                {{/each}}
+            </div>
+
+            <div class="side-col">
+                {{#if education}}
+                <h2>Education</h2>
+                {{#each education}}
+                <div class="entry">
+                    <div class="entry-title">{{degree}}</div>
+                    <div class="entry-subtitle">{{institution}}</div>
+                    <div class="entry-date">{{startDate}} - {{#if endDate}}{{endDate}}{{else}}Present{{/if}}</div>
+                </div>
+                {{/each}}
+                {{/if}}
+
+                <h2>Skills</h2>
+                {{#if skillGroups}}
+                {{#each skillGroups}}
+                <span class="skill-cat">{{category}}</span>
+                <ul class="skill-list">
+                    {{#each skills}}
+                    <li>{{name}}</li>
+                    {{/each}}
+                </ul>
+                {{/each}}
+                {{else}}
+                <ul class="skill-list">
+                    {{#each skills}}
+                    <li>{{name}}</li>
+                    {{/each}}
+                </ul>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

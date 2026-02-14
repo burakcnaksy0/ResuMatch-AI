@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AiService } from '../ai/ai.service';
 import { PdfService } from '../pdf/pdf.service';
 import { ExternalPdfService } from '../pdf/external-pdf.service';
 import { CvData } from '../pdf/pdf.service';
+import { SubscriptionService, CVType } from '../subscription/subscription.service';
 
 @Injectable()
 export class GeneratedCvService {
@@ -12,6 +13,7 @@ export class GeneratedCvService {
         private aiService: AiService,
         private pdfService: PdfService,
         private externalPdfService: ExternalPdfService,
+        private subscriptionService: SubscriptionService,
     ) { }
 
     async generateCV(
@@ -23,6 +25,22 @@ export class GeneratedCvService {
         cvSpecificPhotoUrl?: string,
         templateName: string = 'modern',
     ) {
+        // Determine CV type
+        const cvType = jobPostingId ? CVType.JOB_BASED : CVType.PROFILE_BASED;
+
+        // Check subscription limits
+        const canGenerate = await this.subscriptionService.canGenerateCV(userId, cvType);
+        if (!canGenerate) {
+            const subscription = await this.subscriptionService.getSubscriptionStatus(userId);
+            const limit = cvType === CVType.JOB_BASED
+                ? subscription.usage.jobBasedCVs.limit
+                : subscription.usage.profileBasedCVs.limit;
+
+            throw new ForbiddenException(
+                `You have reached your ${cvType === CVType.JOB_BASED ? 'job-based' : 'profile-based'} CV generation limit (${limit}). Upgrade to Pro for unlimited CV generation.`
+            );
+        }
+
         // Verify profile belongs to user
         const profile = await this.prisma.profile.findFirst({
             where: { id: profileId, userId },
@@ -55,6 +73,7 @@ export class GeneratedCvService {
                 cvSpecificPhotoUrl,
                 tone,
                 templateName,
+                cvType,
             },
         });
 
@@ -81,6 +100,9 @@ export class GeneratedCvService {
                     jobPosting: true,
                 },
             });
+
+            // Increment usage counter for free users
+            await this.subscriptionService.incrementCVUsage(userId, cvType);
 
             return updatedCV;
         } catch (error) {
@@ -174,19 +196,9 @@ export class GeneratedCvService {
 
         const outputFilename = `cv-${cv.id}.pdf`;
         let relativePath = '';
+        // All templates are now handled locally via HTML/CSS templates
         const templateName = (cv as any).templateName || 'modern';
-        const isLocal = ['modern', 'classic'].includes(templateName.toLowerCase());
-
-        if (isLocal) {
-            relativePath = await this.pdfService.generatePdf(templateData, outputFilename, templateName);
-        } else {
-            // External template logic
-            console.log(`Requested external template: ${templateName}`);
-            // TODO: Implement full external PDF flow (generate -> poll -> download)
-            // For now, fallback to local modern template to ensure user gets a PDF
-            console.warn('External PDF flow not fully implemented, falling back to local Modern template');
-            relativePath = await this.pdfService.generatePdf(templateData, outputFilename, 'modern');
-        }
+        relativePath = await this.pdfService.generatePdf(templateData, outputFilename, templateName);
 
         const pdfUrl = `http://localhost:8080/api/generated-cv/${id}/download?userId=${cv.userId}`;
         await this.prisma.generatedCV.update({

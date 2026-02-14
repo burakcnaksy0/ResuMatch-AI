@@ -18,15 +18,22 @@ model User {
   password  String
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  
+
   googleId           String?   @unique @map("google_id")
   resetToken         String?   @map("reset_token")
   resetTokenExpiry   DateTime? @map("reset_token_expiry")
-  
+
   emailVerified          Boolean   @default(false) @map("email_verified")
   verificationCode       String?   @map("verification_code")
   verificationCodeExpiry DateTime? @map("verification_code_expiry")
   lastCodeSentAt         DateTime? @map("last_code_sent_at")
+
+  // Subscription fields
+  subscriptionType       String    @default("FREE") @map("subscription_type") // FREE or PRO
+  subscriptionStartDate  DateTime? @map("subscription_start_date")
+  subscriptionEndDate    DateTime? @map("subscription_end_date")
+  jobBasedCVsUsed        Int       @default(0) @map("job_based_cvs_used")
+  profileBasedCVsUsed    Int       @default(0) @map("profile_based_cvs_used")
 
   profile      Profile?
   jobPostings  JobPosting[]
@@ -193,6 +200,7 @@ model GeneratedCV {
   professionalSummary  String?  @map("professional_summary") @db.Text
   tone                 String?
   templateName         String?  @default("modern") @map("template_name")
+  cvType               String   @default("JOB_BASED") @map("cv_type") // JOB_BASED or PROFILE_BASED
 
   @@map("generated_cvs")
 }

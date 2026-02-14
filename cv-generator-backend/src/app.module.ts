@@ -18,6 +18,7 @@ import { GeneratedCvModule } from './generated-cv/generated-cv.module';
 import { PdfModule } from './pdf/pdf.module';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
+import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { MailModule } from './mail/mail.module';
     GeneratedCvModule,
     AuthModule,
     MailModule,
+    SubscriptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

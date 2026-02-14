@@ -2,6 +2,7 @@ export interface Profile {
     id: string;
     userId: string;
     fullName: string;
+    email?: string;
     phone?: string;
     location?: string;
     linkedinUrl?: string;
@@ -160,14 +161,12 @@ export interface GeneratedCV {
     tone?: string;
     generationStatus: 'pending' | 'completed' | 'failed';
     aiModelUsed?: string;
+    templateName?: string;
     createdAt: string;
     updatedAt?: string;
     jobPosting?: {
         jobTitle: string;
         company: string;
     };
-    profile?: {
-        fullName: string;
-        profilePictureUrl?: string;
-    };
+    profile?: Profile;
 }

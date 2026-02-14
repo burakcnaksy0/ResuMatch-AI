@@ -37,27 +37,88 @@ export class GeneratedCvController {
     }
 
     @Get('templates')
-    async getTemplates() {
-        const localTemplates = [
-            { id: 'modern', name: 'Modern (Local)', type: 'local' },
-            { id: 'classic', name: 'Classic (Local)', type: 'local' }
+    async getTemplates(@Request() req) {
+        // Define all available templates with metadata
+        const allTemplates = [
+            {
+                id: 'classic',
+                name: 'Classic',
+                category: 'Professional',
+                description: 'Traditional single-column layout. Perfect for corporate positions and ATS systems.',
+                isPro: false,
+                layout: 'single-column',
+                colorScheme: 'monochrome',
+                features: ['ATS Optimized', 'Clean Layout', 'Professional'],
+                preview: '/templates/classic-preview.png',
+                bestFor: ['Corporate', 'Finance', 'Legal', 'Government']
+            },
+            {
+                id: 'modern',
+                name: 'Modern (Local)',
+                category: 'Creative',
+                description: 'Two-column design with sidebar. Ideal for tech and startup positions.',
+                isPro: false,
+                type: 'local',
+                layout: 'two-column',
+                colorScheme: 'colorful',
+                features: ['Visual Appeal', 'Sidebar Layout', 'Tech-Friendly'],
+                preview: '/templates/modern-preview.png',
+                bestFor: ['Technology', 'Startups', 'Creative Roles']
+            },
+            {
+                id: 'professional',
+                name: 'Professional',
+                category: 'Business',
+                description: 'Balanced design with subtle colors. Great for mid-senior level positions.',
+                isPro: true,
+                layout: 'hybrid',
+                colorScheme: 'subtle-color',
+                features: ['Premium Design', 'Balanced Layout', 'Modern Professional'],
+                preview: '/templates/professional-preview.png',
+                bestFor: ['Management', 'Consulting', 'Business Development']
+            },
+            {
+                id: 'creative',
+                name: 'Creative',
+                category: 'Design',
+                description: 'Bold and distinctive design. Perfect for creative and design roles.',
+                isPro: true,
+                layout: 'creative',
+                colorScheme: 'vibrant',
+                features: ['Eye-Catching', 'Creative Layout', 'Portfolio Style'],
+                preview: '/templates/creative-preview.png',
+                bestFor: ['Design', 'Marketing', 'Arts', 'Media']
+            },
+            {
+                id: 'executive',
+                name: 'Executive',
+                category: 'Leadership',
+                description: 'Premium executive template with sophisticated design.',
+                isPro: true,
+                layout: 'executive',
+                colorScheme: 'elegant',
+                features: ['Executive Style', 'Premium Feel', 'Leadership Focused'],
+                preview: '/templates/executive-preview.png',
+                bestFor: ['C-Level', 'Executive', 'Senior Leadership']
+            },
+            {
+                id: 'minimal',
+                name: 'Minimal',
+                category: 'Simple',
+                description: 'Ultra-clean minimalist design. Maximum readability.',
+                isPro: true,
+                layout: 'minimal',
+                colorScheme: 'minimal',
+                features: ['Ultra Clean', 'Maximum Readability', 'Minimal Design'],
+                preview: '/templates/minimal-preview.png',
+                bestFor: ['Academic', 'Research', 'Technical Writing']
+            }
         ];
 
-        let externalTemplates = [];
-        try {
-            const ext = await this.externalPdfService.getTemplates();
-            if (ext.document_templates) {
-                externalTemplates = ext.document_templates.map(t => ({
-                    id: t.id,
-                    name: t.name + ' (PDFMonkey)',
-                    type: 'external'
-                }));
-            }
-        } catch (e) {
-            console.error('Failed to fetch external templates', e);
-        }
-
-        return [...localTemplates, ...externalTemplates];
+        return {
+            templates: allTemplates,
+            userHasProAccess: false // Handled by frontend context
+        };
     }
 
     @Post('upload-photo')

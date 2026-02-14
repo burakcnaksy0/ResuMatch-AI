@@ -170,14 +170,22 @@
     <div class="section">
         <div class="section-title">Technical Skills</div>
         <div class="skills-section">
-            {{#each skills}}
+            {{#if skillGroups}}
+            {{#each skillGroups}}
             <div class="grid-row">
                 <span class="skill-category">{{category}}:</span>
                 <span class="skill-list">
-                    {{#each items}}{{name}}{{#unless @last}}, {{/unless}}{{/each}}
+                    {{#each skills}}{{name}}{{#unless @last}}, {{/unless}}{{/each}}
                 </span>
             </div>
             {{/each}}
+            {{else}}
+            <div class="grid-row">
+                <span class="skill-list">
+                    {{#each skills}}{{name}}{{#unless @last}}, {{/unless}}{{/each}}
+                </span>
+            </div>
+            {{/if}}
         </div>
     </div>
 

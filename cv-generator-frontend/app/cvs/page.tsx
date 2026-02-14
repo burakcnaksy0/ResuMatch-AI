@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { generatedCVApi } from '@/lib/api/client';
 import { GeneratedCV } from '@/types';
 import Link from 'next/link';
@@ -22,11 +23,14 @@ import {
     Search,
     TrendingUp,
     Archive,
-    ExternalLink
+    ExternalLink,
+    Crown,
+    AlertCircle
 } from 'lucide-react';
 
 export default function GeneratedCVsPage() {
     const { user, isAuthenticated } = useAuth();
+    const { subscription, canGenerateJobBasedCV, canGenerateProfileBasedCV } = useSubscription();
     const [cvs, setCvs] = useState<GeneratedCV[]>([]);
     const [loading, setLoading] = useState(true);
     const [filterStatus, setFilterStatus] = useState<'all' | 'completed' | 'pending' | 'failed'>('all');
@@ -120,37 +124,37 @@ export default function GeneratedCVsPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30">
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#181c24] via-[#232a36] to-[#10131a]">
                 <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-                    <p className="text-gray-600 font-medium">Loading your CVs...</p>
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#3b82f6] mb-4"></div>
+                    <p className="text-blue-200 font-medium">Loading your CVs...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30">
+        <div className="min-h-screen bg-gradient-to-br from-[#181c24] via-[#232a36] to-[#10131a]">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}
                 <div className="mb-8">
                     <div className="flex items-start justify-between flex-wrap gap-4 mb-6">
                         <div>
                             <div className="flex items-center gap-3 mb-3">
-                                <div className="p-2 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl">
+                                <div className="p-2 bg-gradient-to-br from-[#3b82f6] to-[#6366f1] rounded-xl">
                                     <FileText className="w-6 h-6 text-white" />
                                 </div>
-                                <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+                                <h1 className="text-3xl md:text-4xl font-bold text-white">
                                     Generated CVs
                                 </h1>
                             </div>
-                            <p className="text-lg text-gray-600">
+                            <p className="text-lg text-blue-200">
                                 Manage and download your AI-generated CVs
                             </p>
                         </div>
                         <Link
                             href="/jobs"
-                            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold flex items-center gap-2 shadow-lg shadow-blue-200"
+                            className="px-6 py-3 bg-gradient-to-r from-[#3b82f6] to-[#6366f1] text-white rounded-xl hover:from-[#2563eb] hover:to-[#4f46e5] transition-all font-semibold flex items-center gap-2 shadow-lg shadow-blue-900"
                         >
                             <Plus className="w-5 h-5" />
                             Generate New CV
@@ -159,65 +163,118 @@ export default function GeneratedCVsPage() {
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="bg-white rounded-xl p-4 border border-gray-200">
+                        <div className="bg-[#232a36] rounded-xl p-4 border border-[#232a36]">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-blue-50 rounded-lg">
-                                    <FileText className="w-5 h-5 text-blue-600" />
+                                <div className="p-2 bg-[#181c24] rounded-lg">
+                                    <FileText className="w-5 h-5 text-[#3b82f6]" />
                                 </div>
                                 <div>
-                                    <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-                                    <div className="text-sm text-gray-600">Total CVs</div>
+                                    <div className="text-2xl font-bold text-white">{stats.total}</div>
+                                    <div className="text-sm text-blue-200">Total CVs</div>
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-white rounded-xl p-4 border border-gray-200">
+                        <div className="bg-[#232a36] rounded-xl p-4 border border-[#232a36]">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-green-50 rounded-lg">
-                                    <CheckCircle className="w-5 h-5 text-green-600" />
+                                <div className="p-2 bg-[#181c24] rounded-lg">
+                                    <CheckCircle className="w-5 h-5 text-green-500" />
                                 </div>
                                 <div>
-                                    <div className="text-2xl font-bold text-gray-900">{stats.completed}</div>
-                                    <div className="text-sm text-gray-600">Completed</div>
+                                    <div className="text-2xl font-bold text-white">{stats.completed}</div>
+                                    <div className="text-sm text-blue-200">Completed</div>
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-white rounded-xl p-4 border border-gray-200">
+                        <div className="bg-[#232a36] rounded-xl p-4 border border-[#232a36]">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-yellow-50 rounded-lg">
-                                    <Clock className="w-5 h-5 text-yellow-600" />
+                                <div className="p-2 bg-[#181c24] rounded-lg">
+                                    <Clock className="w-5 h-5 text-yellow-500" />
                                 </div>
                                 <div>
-                                    <div className="text-2xl font-bold text-gray-900">{stats.pending}</div>
-                                    <div className="text-sm text-gray-600">Pending</div>
+                                    <div className="text-2xl font-bold text-white">{stats.pending}</div>
+                                    <div className="text-sm text-blue-200">Pending</div>
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-white rounded-xl p-4 border border-gray-200">
+                        <div className="bg-[#232a36] rounded-xl p-4 border border-[#232a36]">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-red-50 rounded-lg">
-                                    <XCircle className="w-5 h-5 text-red-600" />
+                                <div className="p-2 bg-[#181c24] rounded-lg">
+                                    <XCircle className="w-5 h-5 text-red-500" />
                                 </div>
                                 <div>
-                                    <div className="text-2xl font-bold text-gray-900">{stats.failed}</div>
-                                    <div className="text-sm text-gray-600">Failed</div>
+                                    <div className="text-2xl font-bold text-white">{stats.failed}</div>
+                                    <div className="text-sm text-blue-200">Failed</div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    {/* Subscription Status Banner */}
+                    {subscription && subscription.subscriptionType === 'FREE' && (
+                        <div className="mt-6 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-2 border-amber-500/30 rounded-xl p-5">
+                            <div className="flex items-start justify-between gap-4 flex-wrap">
+                                <div className="flex items-start gap-3 flex-1">
+                                    <AlertCircle className="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" />
+                                    <div>
+                                        <h3 className="text-lg font-bold text-white mb-2">CV Oluşturma Limitlerin</h3>
+                                        <div className="space-y-2 text-sm">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-32 text-blue-200">İş bazlı CV:</div>
+                                                <div className="flex-1 bg-[#181c24] rounded-full h-2 overflow-hidden">
+                                                    <div
+                                                        className={`h-full transition-all ${((subscription.usage.jobBasedCVs.used ?? 0) / (subscription.usage.jobBasedCVs.limit ?? 1)) >= 1 ? 'bg-red-500' : 'bg-blue-500'
+                                                            }`}
+                                                        style={{
+                                                            width: `${((subscription.usage.jobBasedCVs.used ?? 0) / (subscription.usage.jobBasedCVs.limit ?? 1)) * 100}%`
+                                                        }}
+                                                    />
+                                                </div>
+                                                <span className="text-white font-semibold w-16 text-right">
+                                                    {subscription.usage.jobBasedCVs.used} / {subscription.usage.jobBasedCVs.limit}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-32 text-blue-200">Profil bazlı CV:</div>
+                                                <div className="flex-1 bg-[#181c24] rounded-full h-2 overflow-hidden">
+                                                    <div
+                                                        className={`h-full transition-all ${((subscription.usage.profileBasedCVs.used ?? 0) / (subscription.usage.profileBasedCVs.limit ?? 1)) >= 1 ? 'bg-red-500' : 'bg-purple-500'
+                                                            }`}
+                                                        style={{
+                                                            width: `${((subscription.usage.profileBasedCVs.used ?? 0) / (subscription.usage.profileBasedCVs.limit ?? 1)) * 100}%`
+                                                        }}
+                                                    />
+                                                </div>
+                                                <span className="text-white font-semibold w-16 text-right">
+                                                    {subscription.usage.profileBasedCVs.used} / {subscription.usage.profileBasedCVs.limit}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <Link
+                                    href="/pricing"
+                                    className="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold rounded-lg transition-all flex items-center gap-2 shadow-lg whitespace-nowrap"
+                                >
+                                    <Crown className="w-4 h-4" />
+                                    Pro'ya Yükselt
+                                </Link>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Filters and Search */}
-                <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+                <div className="bg-[#232a36] rounded-xl border border-[#232a36] p-4 mb-6">
                     <div className="flex flex-col md:flex-row gap-4">
                         {/* Search */}
                         <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-300" />
                             <input
                                 type="text"
                                 placeholder="Search by job title or company..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                                className="w-full pl-10 pr-4 py-2.5 bg-[#181c24] border border-[#181c24] text-white placeholder-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent"
                             />
                         </div>
 
@@ -226,8 +283,8 @@ export default function GeneratedCVsPage() {
                             <button
                                 onClick={() => setFilterStatus('all')}
                                 className={`px-4 py-2.5 rounded-lg font-medium transition-all ${filterStatus === 'all'
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-[#3b82f6] text-white'
+                                    : 'bg-[#181c24] text-blue-200 hover:bg-[#232a36]'
                                     }`}
                             >
                                 All
@@ -235,8 +292,8 @@ export default function GeneratedCVsPage() {
                             <button
                                 onClick={() => setFilterStatus('completed')}
                                 className={`px-4 py-2.5 rounded-lg font-medium transition-all ${filterStatus === 'completed'
-                                        ? 'bg-green-600 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-green-600 text-white'
+                                    : 'bg-[#181c24] text-blue-200 hover:bg-[#232a36]'
                                     }`}
                             >
                                 Completed
@@ -244,8 +301,8 @@ export default function GeneratedCVsPage() {
                             <button
                                 onClick={() => setFilterStatus('pending')}
                                 className={`px-4 py-2.5 rounded-lg font-medium transition-all ${filterStatus === 'pending'
-                                        ? 'bg-yellow-600 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-yellow-600 text-white'
+                                    : 'bg-[#181c24] text-blue-200 hover:bg-[#232a36]'
                                     }`}
                             >
                                 Pending
@@ -253,8 +310,8 @@ export default function GeneratedCVsPage() {
                             <button
                                 onClick={() => setFilterStatus('failed')}
                                 className={`px-4 py-2.5 rounded-lg font-medium transition-all ${filterStatus === 'failed'
-                                        ? 'bg-red-600 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-red-600 text-white'
+                                    : 'bg-[#181c24] text-blue-200 hover:bg-[#232a36]'
                                     }`}
                             >
                                 Failed
@@ -265,14 +322,14 @@ export default function GeneratedCVsPage() {
 
                 {/* CVs List */}
                 {filteredCVs.length === 0 ? (
-                    <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
-                        <div className="w-20 h-20 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <FileText className="w-10 h-10 text-blue-400" />
+                    <div className="bg-[#232a36] rounded-2xl border border-[#232a36] p-12 text-center">
+                        <div className="w-20 h-20 bg-gradient-to-br from-[#3b82f6] to-[#6366f1] rounded-full flex items-center justify-center mx-auto mb-6">
+                            <FileText className="w-10 h-10 text-white" />
                         </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                        <h3 className="text-2xl font-bold text-white mb-3">
                             {searchTerm || filterStatus !== 'all' ? 'No CVs found' : 'No CVs generated yet'}
                         </h3>
-                        <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                        <p className="text-blue-200 mb-8 max-w-md mx-auto">
                             {searchTerm || filterStatus !== 'all'
                                 ? 'Try adjusting your filters or search term'
                                 : 'Start by analyzing a job posting and generating your first tailored CV'
@@ -280,7 +337,7 @@ export default function GeneratedCVsPage() {
                         </p>
                         <Link
                             href="/jobs"
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-lg shadow-blue-200"
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3b82f6] to-[#6366f1] text-white rounded-xl hover:from-[#2563eb] hover:to-[#4f46e5] transition-all font-semibold shadow-lg shadow-blue-900"
                         >
                             <Plus className="w-5 h-5" />
                             Generate Your First CV
@@ -295,21 +352,21 @@ export default function GeneratedCVsPage() {
                             return (
                                 <div
                                     key={cv.id}
-                                    className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-200"
+                                    className="bg-[#232a36] rounded-2xl border border-[#232a36] p-6 hover:border-[#3b82f6] hover:shadow-lg transition-all duration-200"
                                 >
                                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                                         {/* Left Content */}
                                         <div className="flex-1">
                                             <div className="flex items-start gap-4 mb-4">
-                                                <div className="p-3 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
-                                                    <FileText className="w-6 h-6 text-blue-600" />
+                                                <div className="p-3 bg-[#181c24] rounded-xl">
+                                                    <FileText className="w-6 h-6 text-[#3b82f6]" />
                                                 </div>
                                                 <div className="flex-1">
-                                                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                                                    <h3 className="text-xl font-bold text-white mb-2">
                                                         {cv.jobPosting?.jobTitle || 'Untitled Position'}
                                                     </h3>
                                                     {cv.jobPosting?.company && (
-                                                        <div className="flex items-center gap-2 text-gray-600 mb-3">
+                                                        <div className="flex items-center gap-2 text-blue-200 mb-3">
                                                             <Building2 className="w-4 h-4" />
                                                             <span className="font-medium">{cv.jobPosting.company}</span>
                                                         </div>
@@ -324,14 +381,14 @@ export default function GeneratedCVsPage() {
                                                         </div>
 
                                                         {/* Date */}
-                                                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-600">
+                                                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#181c24] border border-[#181c24] rounded-lg text-blue-200">
                                                             <Calendar className="w-4 h-4" />
                                                             <span>{new Date(cv.createdAt).toLocaleDateString()}</span>
                                                         </div>
 
                                                         {/* AI Model */}
                                                         {cv.aiModelUsed && (
-                                                            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 border border-purple-200 rounded-lg text-purple-600">
+                                                            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-900/30 border border-purple-500/30 rounded-lg text-purple-300">
                                                                 <Sparkles className="w-4 h-4" />
                                                                 <span className="font-medium">{cv.aiModelUsed}</span>
                                                             </div>
@@ -347,7 +404,7 @@ export default function GeneratedCVsPage() {
                                                 <>
                                                     <Link
                                                         href={`/cvs/${cv.id}`}
-                                                        className="group flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all font-medium shadow-sm"
+                                                        className="group flex items-center gap-2 px-4 py-2.5 bg-[#3b82f6] text-white rounded-xl hover:bg-[#2563eb] transition-all font-medium shadow-sm"
                                                         title="View CV"
                                                     >
                                                         <Eye className="w-4 h-4" />
@@ -365,7 +422,7 @@ export default function GeneratedCVsPage() {
                                             )}
                                             <button
                                                 onClick={() => handleDelete(cv.id)}
-                                                className="flex items-center gap-2 px-4 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all font-medium"
+                                                className="flex items-center gap-2 px-4 py-2.5 bg-red-900/30 text-red-300 rounded-xl hover:bg-red-900/50 transition-all font-medium"
                                                 title="Delete CV"
                                             >
                                                 <Trash2 className="w-4 h-4" />
@@ -382,7 +439,7 @@ export default function GeneratedCVsPage() {
                 {/* Help Section */}
                 {filteredCVs.length > 0 && (
                     <div className="mt-8 grid md:grid-cols-2 gap-6">
-                        <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-6 text-white">
+                        <div className="bg-gradient-to-br from-[#3b82f6] to-[#6366f1] rounded-2xl p-6 text-white">
                             <div className="flex items-start gap-3">
                                 <div className="p-2 bg-white/20 rounded-lg">
                                     <TrendingUp className="w-5 h-5" />
@@ -396,7 +453,7 @@ export default function GeneratedCVsPage() {
                             </div>
                         </div>
 
-                        <div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl p-6 text-white">
+                        <div className="bg-gradient-to-br from-[#6366f1] to-[#a21caf] rounded-2xl p-6 text-white">
                             <div className="flex items-start gap-3">
                                 <div className="p-2 bg-white/20 rounded-lg">
                                     <Archive className="w-5 h-5" />

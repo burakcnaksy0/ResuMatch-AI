@@ -71,125 +71,125 @@ export default function ProfileForm({ initialData, profileId, onSuccess }: Profi
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-blue-200 mb-1">
                     Full Name *
                 </label>
                 <input
                     {...register('fullName')}
                     type="text"
-                    className="w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 bg-[#181c24] border border-[#232a36] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent transition-all"
                     placeholder="John Doe"
                 />
                 {errors.fullName && (
-                    <p className="text-red-500 text-sm mt-1">{errors.fullName.message}</p>
+                    <p className="text-red-400 text-sm mt-1">{errors.fullName.message}</p>
                 )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-blue-200 mb-1">
                         Phone
                     </label>
                     <input
                         {...register('phone')}
                         type="tel"
-                        className="w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 bg-[#181c24] border border-[#232a36] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent transition-all"
                         placeholder="+1 (555) 123-4567"
                     />
                     {errors.phone && (
-                        <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+                        <p className="text-red-400 text-sm mt-1">{errors.phone.message}</p>
                     )}
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-blue-200 mb-1">
                         Location
                     </label>
                     <input
                         {...register('location')}
                         type="text"
-                        className="w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 bg-[#181c24] border border-[#232a36] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent transition-all"
                         placeholder="San Francisco, CA"
                     />
                     {errors.location && (
-                        <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>
+                        <p className="text-red-400 text-sm mt-1">{errors.location.message}</p>
                     )}
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-blue-200 mb-1">
                         LinkedIn URL
                     </label>
                     <input
                         {...register('linkedinUrl')}
                         type="url"
-                        className="w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 bg-[#181c24] border border-[#232a36] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent transition-all"
                         placeholder="https://linkedin.com/in/..."
                     />
                     {errors.linkedinUrl && (
-                        <p className="text-red-500 text-sm mt-1">{errors.linkedinUrl.message}</p>
+                        <p className="text-red-400 text-sm mt-1">{errors.linkedinUrl.message}</p>
                     )}
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-blue-200 mb-1">
                         GitHub URL
                     </label>
                     <input
                         {...register('githubUrl')}
                         type="url"
-                        className="w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 bg-[#181c24] border border-[#232a36] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent transition-all"
                         placeholder="https://github.com/..."
                     />
                     {errors.githubUrl && (
-                        <p className="text-red-500 text-sm mt-1">{errors.githubUrl.message}</p>
+                        <p className="text-red-400 text-sm mt-1">{errors.githubUrl.message}</p>
                     )}
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-blue-200 mb-1">
                         Portfolio URL
                     </label>
                     <input
                         {...register('portfolioUrl')}
                         type="url"
-                        className="w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 bg-[#181c24] border border-[#232a36] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent transition-all"
                         placeholder="https://..."
                     />
                     {errors.portfolioUrl && (
-                        <p className="text-red-500 text-sm mt-1">{errors.portfolioUrl.message}</p>
+                        <p className="text-red-400 text-sm mt-1">{errors.portfolioUrl.message}</p>
                     )}
                 </div>
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-blue-200 mb-1">
                     Professional Summary
                 </label>
                 <textarea
                     {...register('professionalSummary')}
                     rows={4}
-                    className="w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 bg-[#181c24] border border-[#232a36] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent transition-all"
                     placeholder="Brief summary of your professional background and key achievements..."
                 />
                 {errors.professionalSummary && (
-                    <p className="text-red-500 text-sm mt-1">{errors.professionalSummary.message}</p>
+                    <p className="text-red-400 text-sm mt-1">{errors.professionalSummary.message}</p>
                 )}
             </div>
 
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex justify-end gap-3 pt-4 border-t border-[#181c24]">
                 <button
                     type="button"
-                    className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                    className="px-4 py-2 text-blue-200 bg-[#181c24] rounded-xl hover:bg-[#1f242e] transition-colors"
                     disabled={isSubmitting}
                 >
                     Cancel
                 </button>
                 <button
                     type="submit"
-                    className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                    className="px-6 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-lg shadow-blue-900/20"
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? 'Saving...' : 'Save Changes'}

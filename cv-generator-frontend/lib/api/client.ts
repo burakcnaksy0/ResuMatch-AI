@@ -94,6 +94,20 @@ export const generatedCVApi = {
     getTemplates: () => api.get('/generated-cv/templates'),
 };
 
+// Template types
+export interface CVTemplate {
+    id: string;
+    name: string;
+    category: string;
+    description: string;
+    isPro: boolean;
+    layout: string;
+    colorScheme: string;
+    features: string[];
+    preview: string;
+    bestFor: string[];
+}
+
 // Education API
 export const educationApi = {
     create: (data: any) => api.post('/education', data),
@@ -156,4 +170,12 @@ export const jobPostingApi = {
     update: (id: string, userId: string, data: any) => api.patch(`/job-postings/${id}?userId=${userId}`, data),
     delete: (id: string, userId: string) => api.delete(`/job-postings/${id}?userId=${userId}`),
     analyze: (id: string, userId: string) => api.get(`/job-postings/${id}/analyze?userId=${userId}`),
+};
+
+// Subscription API
+export const subscriptionApi = {
+    getStatus: () => api.get('/subscription/status'),
+    getPricing: () => api.get('/subscription/pricing'),
+    upgrade: (billingCycle: 'monthly' | 'yearly') => api.post('/subscription/upgrade', { billingCycle }),
+    downgrade: () => api.post('/subscription/downgrade'),
 };

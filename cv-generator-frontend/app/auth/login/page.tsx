@@ -51,20 +51,20 @@ export default function LoginPage() {
     ];
 
     return (
-        <div className="flex min-h-screen bg-white">
+        <div className="flex min-h-screen bg-[#10131a]">
             {/* Left Side - Branding & Benefits */}
-            <div className="hidden lg:flex lg:flex-1 flex-col justify-between bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 p-12 text-white relative overflow-hidden">
+            <div className="hidden lg:flex lg:flex-1 flex-col justify-between bg-[#181c24] border-r border-[#232a36] p-12 text-white relative overflow-hidden">
                 {/* Animated Background Elements */}
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-blob" />
-                    <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-2000" />
-                    <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-4000" />
+                <div className="absolute inset-0 opacity-20">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full mix-blend-overlay filter blur-3xl animate-blob" />
+                    <div className="absolute top-0 left-0 w-96 h-96 bg-purple-600/20 rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-2000" />
+                    <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-indigo-600/20 rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-4000" />
                 </div>
 
                 {/* Logo */}
                 <div className="relative z-10">
                     <Link href="/" className="flex items-center gap-3 group">
-                        <div className="relative w-12 h-12 overflow-hidden rounded-xl bg-white/90 shadow-lg group-hover:bg-white transition-all duration-300">
+                        <div className="relative w-12 h-12 overflow-hidden rounded-xl bg-[#232a36] shadow-lg group-hover:bg-[#2a3241] transition-all duration-300 border border-[#2a3241]">
                             <Image
                                 src="/logo.png"
                                 alt={APP_NAME}
@@ -79,18 +79,20 @@ export default function LoginPage() {
                 {/* Main Content */}
                 <div className="relative z-10 space-y-8">
                     <div className="space-y-4">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm border border-white/30">
-                            <Sparkles className="w-4 h-4" />
-                            <span className="text-sm font-medium">Join 15,000+ professionals</span>
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#232a36] border border-[#3b82f6]/30">
+                            <Sparkles className="w-4 h-4 text-[#3b82f6]" />
+                            <span className="text-sm font-medium text-blue-200">Join 15,000+ professionals</span>
                         </div>
 
-                        <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
+                        <h1 className="text-4xl lg:text-5xl font-bold leading-tight text-white">
                             Welcome back to your
                             <br />
-                            career journey
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">
+                                career journey
+                            </span>
                         </h1>
 
-                        <p className="text-xl text-blue-100">
+                        <p className="text-xl text-gray-400">
                             Create job-winning CVs in seconds with the power of AI
                         </p>
                     </div>
@@ -99,46 +101,46 @@ export default function LoginPage() {
                     <div className="space-y-4 pt-4">
                         {benefits.map((benefit, index) => (
                             <div key={index} className="flex items-center gap-3">
-                                <div className="flex-shrink-0 w-6 h-6 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                                    <CheckCircle className="w-4 h-4" />
+                                <div className="flex-shrink-0 w-6 h-6 bg-blue-900/30 rounded-full flex items-center justify-center border border-blue-500/30">
+                                    <CheckCircle className="w-4 h-4 text-blue-400" />
                                 </div>
-                                <span className="text-lg">{benefit}</span>
+                                <span className="text-lg text-gray-300">{benefit}</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {/* Footer Quote */}
-                <div className="relative z-10 border-l-4 border-white/30 pl-6 space-y-3">
-                    <p className="text-lg italic">
+                <div className="relative z-10 border-l-4 border-[#3b82f6] pl-6 space-y-3">
+                    <p className="text-lg italic text-gray-300">
                         "This tool helped me land my dream job in just 2 weeks. The AI optimization is incredible!"
                     </p>
                     <div>
-                        <p className="font-semibold">Sarah Johnson</p>
-                        <p className="text-sm text-blue-100">Software Engineer at Tech Corp</p>
+                        <p className="font-semibold text-white">Sarah Johnson</p>
+                        <p className="text-sm text-blue-400">Software Engineer at Tech Corp</p>
                     </div>
                 </div>
             </div>
 
             {/* Right Side - Login Form */}
-            <div className="flex-1 flex items-center justify-center p-8 sm:p-12">
+            <div className="flex-1 flex items-center justify-center p-8 sm:p-12 bg-[#10131a]">
                 <div className="w-full max-w-md space-y-8">
                     {/* Mobile Logo */}
                     <div className="lg:hidden flex justify-center mb-8">
                         <Link href="/" className="flex items-center gap-2">
-                            <div className="p-2 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg">
-                                <Briefcase className="w-6 h-6 text-white" />
+                            <div className="p-2 bg-[#232a36] rounded-lg border border-[#2a3241]">
+                                <Briefcase className="w-6 h-6 text-[#3b82f6]" />
                             </div>
-                            <span className="text-xl font-bold text-gray-900">CV Generator AI</span>
+                            <span className="text-xl font-bold text-white">CV Generator AI</span>
                         </Link>
                     </div>
 
                     {/* Header */}
                     <div className="text-center lg:text-left space-y-2">
-                        <h2 className="text-3xl font-bold text-gray-900">
+                        <h2 className="text-3xl font-bold text-white">
                             Sign in to your account
                         </h2>
-                        <p className="text-gray-600">
+                        <p className="text-gray-400">
                             Enter your credentials to access your dashboard
                         </p>
                     </div>
@@ -147,27 +149,27 @@ export default function LoginPage() {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                         {/* Email Field */}
                         <div className="space-y-2">
-                            <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="email-address" className="block text-sm font-medium text-blue-200">
                                 Email address
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-gray-400" />
+                                    <Mail className="h-5 w-5 text-gray-500" />
                                 </div>
                                 <input
                                     {...register('email')}
                                     id="email-address"
                                     type="email"
                                     autoComplete="email"
-                                    className={`block w-full pl-12 pr-4 py-3 border rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 ${errors.email
-                                        ? 'border-red-300 focus:ring-red-600'
-                                        : 'border-gray-300'
+                                    className={`block w-full pl-12 pr-4 py-3 bg-[#181c24] border rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent transition-all duration-200 ${errors.email
+                                        ? 'border-red-500/50 focus:ring-red-500'
+                                        : 'border-[#2a3241]'
                                         }`}
                                     placeholder="you@example.com"
                                 />
                             </div>
                             {errors.email && (
-                                <p className="text-red-600 text-sm flex items-center gap-1">
+                                <p className="text-red-400 text-sm flex items-center gap-1">
                                     <span className="text-lg">⚠</span>
                                     {errors.email.message}
                                 </p>
@@ -177,34 +179,34 @@ export default function LoginPage() {
                         {/* Password Field */}
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                                <label htmlFor="password" className="block text-sm font-medium text-blue-200">
                                     Password
                                 </label>
                                 <Link
                                     href="/auth/forgot-password"
-                                    className="text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors"
+                                    className="text-sm font-medium text-[#3b82f6] hover:text-blue-400 transition-colors"
                                 >
                                     Forgot password?
                                 </Link>
                             </div>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Lock className="h-5 w-5 text-gray-400" />
+                                    <Lock className="h-5 w-5 text-gray-500" />
                                 </div>
                                 <input
                                     {...register('password')}
                                     id="password"
                                     type="password"
                                     autoComplete="current-password"
-                                    className={`block w-full pl-12 pr-4 py-3 border rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 ${errors.password
-                                        ? 'border-red-300 focus:ring-red-600'
-                                        : 'border-gray-300'
+                                    className={`block w-full pl-12 pr-4 py-3 bg-[#181c24] border rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent transition-all duration-200 ${errors.password
+                                        ? 'border-red-500/50 focus:ring-red-500'
+                                        : 'border-[#2a3241]'
                                         }`}
                                     placeholder="Enter your password"
                                 />
                             </div>
                             {errors.password && (
-                                <p className="text-red-600 text-sm flex items-center gap-1">
+                                <p className="text-red-400 text-sm flex items-center gap-1">
                                     <span className="text-lg">⚠</span>
                                     {errors.password.message}
                                 </p>
@@ -217,9 +219,9 @@ export default function LoginPage() {
                                 id="remember-me"
                                 name="remember-me"
                                 type="checkbox"
-                                className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
+                                className="h-4 w-4 text-[#3b82f6] focus:ring-[#3b82f6] border-[#2a3241] bg-[#181c24] rounded"
                             />
-                            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-400">
                                 Remember me for 30 days
                             </label>
                         </div>
@@ -228,7 +230,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="group relative w-full flex items-center justify-center gap-2 px-6 py-3 text-base font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-200 hover:shadow-xl hover:shadow-blue-300"
+                            className="group relative w-full flex items-center justify-center gap-2 px-6 py-3 text-base font-semibold text-white bg-[#3b82f6] rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3b82f6] focus:ring-offset-[#10131a] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-900/30"
                         >
                             {isSubmitting ? (
                                 <>
@@ -249,10 +251,10 @@ export default function LoginPage() {
                         {/* Divider */}
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-300"></div>
+                                <div className="w-full border-t border-[#2a3241]"></div>
                             </div>
                             <div className="relative flex justify-center text-sm">
-                                <span className="px-4 bg-white text-gray-500">Or continue with</span>
+                                <span className="px-4 bg-[#10131a] text-gray-500">Or continue with</span>
                             </div>
                         </div>
 
@@ -282,7 +284,7 @@ export default function LoginPage() {
                                 </GoogleOAuthProvider>
                             </div>
                             <button
-                                className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 transition-all duration-200"
+                                className="flex items-center justify-center gap-2 px-4 py-3 border border-[#2a3241] rounded-xl text-sm font-medium text-gray-300 bg-[#181c24] hover:bg-[#232a36] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3b82f6] focus:ring-offset-[#10131a] transition-all duration-200"
                             >
                                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
@@ -290,32 +292,32 @@ export default function LoginPage() {
                                 GitHub
                             </button>
                         </div>
-                    </form>
 
-                    {/* Sign Up Link */}
-                    <div className="text-center">
-                        <p className="text-sm text-gray-600">
-                            Don't have an account?{' '}
-                            <Link
-                                href="/auth/register"
-                                className="font-semibold text-blue-600 hover:text-blue-500 transition-colors"
-                            >
-                                Sign up for free
+                        {/* Sign Up Link */}
+                        <div className="text-center">
+                            <p className="text-sm text-gray-500">
+                                Don't have an account?{' '}
+                                <Link
+                                    href="/auth/register"
+                                    className="font-semibold text-[#3b82f6] hover:text-blue-400 transition-colors"
+                                >
+                                    Sign up for free
+                                </Link>
+                            </p>
+                        </div>
+
+                        {/* Terms */}
+                        <p className="text-xs text-center text-gray-600">
+                            By signing in, you agree to our{' '}
+                            <Link href="/terms" className="text-[#3b82f6] hover:text-blue-400">
+                                Terms of Service
+                            </Link>{' '}
+                            and{' '}
+                            <Link href="/privacy" className="text-[#3b82f6] hover:text-blue-400">
+                                Privacy Policy
                             </Link>
                         </p>
-                    </div>
-
-                    {/* Terms */}
-                    <p className="text-xs text-center text-gray-500">
-                        By signing in, you agree to our{' '}
-                        <Link href="/terms" className="text-blue-600 hover:text-blue-500">
-                            Terms of Service
-                        </Link>{' '}
-                        and{' '}
-                        <Link href="/privacy" className="text-blue-600 hover:text-blue-500">
-                            Privacy Policy
-                        </Link>
-                    </p>
+                    </form>
                 </div>
             </div>
         </div>
