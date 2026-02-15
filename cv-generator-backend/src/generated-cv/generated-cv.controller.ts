@@ -20,6 +20,7 @@ import { extname } from 'path';
 import { GeneratedCvService } from './generated-cv.service';
 import { ExternalPdfService } from '../pdf/external-pdf.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreateGeneratedCvDto } from './dto/create-generated-cv.dto';
 
 @Controller('generated-cv')
 @UseGuards(JwtAuthGuard)
@@ -157,26 +158,21 @@ export class GeneratedCvController {
         return { url: photoUrl };
     }
 
+
     @Post('generate')
     async generate(
         @Request() req,
-        @Body() body: {
-            profileId: string;
-            jobPostingId: string;
-            includeProfilePicture?: boolean;
-            tone?: string;
-            cvSpecificPhotoUrl?: string;
-            templateName?: string;
-        },
+        @Body() createGeneratedCvDto: CreateGeneratedCvDto,
     ) {
         return this.generatedCvService.generateCV(
-            body.profileId,
-            body.jobPostingId,
+            createGeneratedCvDto.profileId,
+            createGeneratedCvDto.jobPostingId,
             req.user.userId,
-            body.includeProfilePicture,
-            body.tone,
-            body.cvSpecificPhotoUrl,
-            body.templateName,
+            createGeneratedCvDto.includeProfilePicture,
+            createGeneratedCvDto.tone,
+            createGeneratedCvDto.cvSpecificPhotoUrl,
+            createGeneratedCvDto.templateName,
+            createGeneratedCvDto.contentLanguage,
         );
     }
 

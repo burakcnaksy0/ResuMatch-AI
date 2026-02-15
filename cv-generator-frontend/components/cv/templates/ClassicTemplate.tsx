@@ -48,8 +48,22 @@ export default function ClassicTemplate({
                     className="w-[6.5cm] flex-shrink-0 flex flex-col"
                     style={{ background: '#1a1a1a', color: '#f5f0eb' }}
                 >
+                    {/* Photo block */}
+                    {(cv.cvSpecificPhotoUrl || (cv.includeProfilePicture && profile?.profilePictureUrl)) && (
+                        <div className="px-8 pt-10 pb-4 flex justify-center">
+                            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white border-opacity-10">
+                                <img
+                                    src={cv.cvSpecificPhotoUrl || profile?.profilePictureUrl}
+                                    alt="Profile"
+                                    crossOrigin="anonymous"
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                        </div>
+                    )}
+
                     {/* Name block */}
-                    <div className="px-8 pt-12 pb-8 border-b border-white border-opacity-10">
+                    <div className="px-8 pt-4 pb-8 border-b border-white border-opacity-10">
                         <p
                             className="text-xs uppercase tracking-[0.25em] mb-3"
                             style={{ color: '#c8a96e', letterSpacing: '0.2em' }}
@@ -104,6 +118,48 @@ export default function ClassicTemplate({
                                 <div>
                                     <p className="text-[0.6rem] uppercase tracking-wider mb-0.5" style={{ color: '#a09080' }}>Location</p>
                                     <p className="text-[0.72rem]" style={{ color: '#e8e0d5' }}>{profile.location}</p>
+                                </div>
+                            )}
+                            {profile?.linkedinUrl && (
+                                <div className="mt-2">
+                                    <p className="text-[0.6rem] uppercase tracking-wider mb-0.5" style={{ color: '#a09080' }}>LinkedIn</p>
+                                    <a
+                                        href={profile.linkedinUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-[0.72rem] break-all hover:underline block leading-tight"
+                                        style={{ color: '#e8e0d5' }}
+                                    >
+                                        In/Profile
+                                    </a>
+                                </div>
+                            )}
+                            {profile?.githubUrl && (
+                                <div className="mt-2">
+                                    <p className="text-[0.6rem] uppercase tracking-wider mb-0.5" style={{ color: '#a09080' }}>GitHub</p>
+                                    <a
+                                        href={profile.githubUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-[0.72rem] break-all hover:underline block leading-tight"
+                                        style={{ color: '#e8e0d5' }}
+                                    >
+                                        Git/Profile
+                                    </a>
+                                </div>
+                            )}
+                            {profile?.portfolioUrl && (
+                                <div className="mt-2">
+                                    <p className="text-[0.6rem] uppercase tracking-wider mb-0.5" style={{ color: '#a09080' }}>Portfolio</p>
+                                    <a
+                                        href={profile.portfolioUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-[0.72rem] break-all hover:underline block leading-tight"
+                                        style={{ color: '#e8e0d5' }}
+                                    >
+                                        Website
+                                    </a>
                                 </div>
                             )}
                         </div>
@@ -199,7 +255,7 @@ export default function ClassicTemplate({
 
                     {/* Professional Summary */}
                     <section>
-                        <SectionHeading>Professional Summary</SectionHeading>
+                        <SectionHeading>{content.sectionTitles?.professionalSummary || 'Professional Summary'}</SectionHeading>
                         {isEditingSummary ? (
                             <div className="space-y-2">
                                 <textarea
@@ -248,7 +304,7 @@ export default function ClassicTemplate({
                     {/* Experience */}
                     {content.workExperience && content.workExperience.length > 0 && (
                         <section>
-                            <SectionHeading>Experience</SectionHeading>
+                            <SectionHeading>{content.sectionTitles?.workExperience || 'Experience'}</SectionHeading>
                             <div className="space-y-7">
                                 {content.workExperience.map((exp, idx) => (
                                     <div key={idx} className="break-inside-avoid">
@@ -322,7 +378,7 @@ export default function ClassicTemplate({
                     {/* Key Projects */}
                     {content.projects && content.projects.length > 0 && (
                         <section>
-                            <SectionHeading>Key Projects</SectionHeading>
+                            <SectionHeading>{content.sectionTitles?.projects || 'Key Projects'}</SectionHeading>
                             <div className="space-y-4">
                                 {content.projects.map((proj, idx) => (
                                     <div key={idx} className="break-inside-avoid">
@@ -340,6 +396,15 @@ export default function ClassicTemplate({
                                                     style={{ color: '#c8a96e', textDecoration: 'underline' }}
                                                 >
                                                     View Project
+                                                </a>
+                                            )}
+                                            {proj.githubUrl && (
+                                                <a
+                                                    href={proj.githubUrl}
+                                                    className="text-[0.65rem] uppercase tracking-widest flex-shrink-0"
+                                                    style={{ color: '#c8a96e', textDecoration: 'underline' }}
+                                                >
+                                                    GitHub
                                                 </a>
                                             )}
                                         </div>

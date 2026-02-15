@@ -74,11 +74,11 @@ export const generatedCVApi = {
     generate: (data: {
         profileId: string;
         jobPostingId?: string;
-        userId: string;
         includeProfilePicture?: boolean;
         tone?: string;
         cvSpecificPhotoUrl?: string;
         templateName?: string;
+        contentLanguage?: string;
     }) => api.post('/generated-cv/generate', data),
     uploadPhoto: (formData: FormData) => api.post('/generated-cv/upload-photo', formData, {
         headers: {

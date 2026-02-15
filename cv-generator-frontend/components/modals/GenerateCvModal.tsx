@@ -20,6 +20,7 @@ export interface GenerateOptions {
     cvSpecificPhotoUrl?: string;
     tone: string;
     templateName: string;
+    contentLanguage: string;
 }
 
 export default function GenerateCvModal({
@@ -34,6 +35,7 @@ export default function GenerateCvModal({
     const [step, setStep] = useState<'template' | 'customize'>('template');
     const [photoOption, setPhotoOption] = useState<'none' | 'profile' | 'upload'>('none');
     const [tone, setTone] = useState('Professional');
+    const [contentLanguage, setContentLanguage] = useState('English');
     const [selectedTemplate, setSelectedTemplate] = useState<CVTemplate | null>(null);
     const [templates, setTemplates] = useState<CVTemplate[]>([]);
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -118,6 +120,7 @@ export default function GenerateCvModal({
             cvSpecificPhotoUrl,
             tone,
             templateName: selectedTemplate.id,
+            contentLanguage,
         });
     };
 
@@ -371,6 +374,27 @@ export default function GenerateCvModal({
                                     </div>
                                 </div>
                             )}
+
+                            {/* Language Selection */}
+                            <div>
+                                <label className="block text-sm font-bold text-white mb-2">
+                                    CV Language
+                                </label>
+                                <select
+                                    value={contentLanguage}
+                                    onChange={(e) => setContentLanguage(e.target.value)}
+                                    className="w-full border border-gray-600 bg-[#232a36] text-white font-medium rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                >
+                                    <option value="English">English</option>
+                                    <option value="Turkish">Turkish (Türkçe)</option>
+                                    <option value="German">German (Deutsch)</option>
+                                    <option value="French">French (Français)</option>
+                                    <option value="Spanish">Spanish (Español)</option>
+                                </select>
+                                <p className="text-xs text-gray-400 mt-1">
+                                    The entire CV content including titles and summaries will be generated in this language.
+                                </p>
+                            </div>
 
                             {/* Tone Selection */}
                             <div>

@@ -24,6 +24,7 @@ export class GeneratedCvService {
         tone: string = 'Professional',
         cvSpecificPhotoUrl?: string,
         templateName: string = 'modern',
+        contentLanguage: string = 'English',
     ) {
         // Determine CV type
         const cvType = jobPostingId ? CVType.JOB_BASED : CVType.PROFILE_BASED;
@@ -83,6 +84,7 @@ export class GeneratedCvService {
                 profileId,
                 jobPostingId: jobPostingId || undefined,
                 tone,
+                language: contentLanguage,
             });
 
             // Update CV with generated content

@@ -177,11 +177,11 @@ export default function JobsPage() {
             const response = await generatedCVApi.generate({
                 profileId,
                 jobPostingId: selectedJobForGeneration || undefined,
-                userId: user.id,
                 includeProfilePicture: options.includeProfilePicture,
                 cvSpecificPhotoUrl: options.cvSpecificPhotoUrl,
                 tone: options.tone,
                 templateName: options.templateName,
+                contentLanguage: options.contentLanguage,
             });
             toast.success('CV generated successfully!');
             // Wait a bit before redirecting so toast is visible
@@ -528,12 +528,7 @@ export default function JobsPage() {
                                                             </div>
                                                         )}
                                                         <div className="flex flex-wrap gap-3 text-sm text-blue-200">
-                                                            {job.location && (
-                                                                <div className="flex items-center gap-1">
-                                                                    <MapPin className="w-4 h-4" />
-                                                                    <span>{job.location}</span>
-                                                                </div>
-                                                            )}
+
                                                             {job.createdAt && (
                                                                 <div className="flex items-center gap-1">
                                                                     <Calendar className="w-4 h-4" />

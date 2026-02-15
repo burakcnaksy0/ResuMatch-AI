@@ -7,6 +7,7 @@ interface CVGenerationInput {
   profileId: string;
   jobPostingId?: string;
   tone?: string;
+  language?: string;
 }
 
 interface GeneratedCVContent {
@@ -86,7 +87,7 @@ export class AiService {
 
   async generateCV(input: CVGenerationInput): Promise<GeneratedCVContent> {
     this.logger.log(
-      `Generating CV for profile ${input.profileId} ${input.jobPostingId ? `and job ${input.jobPostingId}` : '(General CV)'} with tone: ${input.tone || 'Professional'}`,
+      `Generating CV for profile ${input.profileId} ${input.jobPostingId ? `and job ${input.jobPostingId}` : '(General CV)'} with tone: ${input.tone || 'Professional'} and language: ${input.language || 'English'}`,
     );
 
     // Fetch profile data with all relations
@@ -119,7 +120,7 @@ export class AiService {
     }
 
     // Generate CV using OpenAI/OpenRouter
-    const prompt = this.buildPrompt(profile, jobPosting, input.tone);
+    const prompt = this.buildPrompt(profile, jobPosting, input.tone, input.language);
     // Use gpt-4o-mini which is much more affordable but still very capable for this task
     // The previous error indicated insufficient credits for gpt-4o with high token limit
     const model = 'gpt-4o-mini';
@@ -127,7 +128,7 @@ export class AiService {
     try {
       const completion = await this.openai.chat.completions.create({
         model,
-        max_tokens: 2000,
+        max_tokens: 4000,
         messages: [
           {
             role: 'system',
@@ -157,7 +158,7 @@ export class AiService {
     }
   }
 
-  private buildPrompt(profile: any, jobPosting: any | null, tone: string = 'Professional'): string {
+  private buildPrompt(profile: any, jobPosting: any | null, tone: string = 'Professional', language: string = 'English'): string {
     const jobContext = jobPosting ? `
 **Job Posting:**
 - Title: ${jobPosting.jobTitle}
@@ -181,7 +182,7 @@ This is a general purpose CV based on the candidate's profile. Highlight their s
 3. **Skills:** Organize skills logically. Group them if possible (though pure JSON array is requested, use category field effectively).
 `;
 
-    return `Generate a ${jobPosting ? 'tailored' : 'comprehensive professional'} CV based on the candidate's profile ${jobPosting ? 'and the job posting requirements' : ''}.
+    return `Generate a ${jobPosting ? 'tailored' : 'comprehensive professional'} CV in ${language} language based on the candidate's profile ${jobPosting ? 'and the job posting requirements' : ''}.
 
 **Style/Tone Requirement:** ${tone}
 (Use this tone specifically for the Professional Summary and the descriptions of experiences/projects. Common tones include: Professional, Technical, Leadership, Creative, Academic.)
@@ -235,7 +236,10 @@ ${profile.languages.map((lang: any) => `- ${lang.name} (${lang.proficiency || 'N
 ${specificInstructions}
 4. **Accuracy:** Do not invent facts.
 5. **Categorization:** For the 'Skills' section, assign a RELEVANT TECHNICAL CATEGORY to each skill. Examples: 'Programming Languages', 'Frameworks & Libraries', 'Databases', 'Cloud & DevOps', 'Tools', 'Soft Skills'. Do NOT use a generic 'Skills' category unless absolutely necessary. Group similar technologies together.
-6. **Localization (Section Titles):** Detect the language of the candidate's profile (e.g. Turkish or English). Generate the 'sectionTitles' object with appropriate titles in that language. For example, if Turkish, use 'Profesyonel Özet', 'İş Deneyimi', 'Eğitim', 'Yetenekler', 'Projeler'. All generated content (summary, descriptions) should be in the same language as the profile, unless the job posting is in English, in which case prioritize the job posting language. If uncertain, default to the Profile language.
+    6. **Localization (CRITICAL):** The ENTIRE CV content MUST be in ${language}.
+       - Translate all section titles in 'sectionTitles' object to ${language} (e.g., 'Professional Summary' -> 'Profesyonel Özet' if Turkish).
+       - Translate the professional summary, experience descriptions, project details, and skills to ${language}.
+       - Even if the input profile is in another language, the OUTPUT MUST be in ${language}.
 
 **Output Format:**
 Return ONLY a valid JSON object with this exact structure:

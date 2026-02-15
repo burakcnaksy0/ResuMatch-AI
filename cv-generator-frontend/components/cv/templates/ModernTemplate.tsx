@@ -234,7 +234,7 @@ export default function ModernTemplate({
                 {/* Skills */}
                 {skillGroups.length > 0 && (
                     <div style={{ padding: '1.4rem 1.8rem', borderBottom: `1px solid ${T.sidebarFaint}` }}>
-                        <SideLabel>Skills</SideLabel>
+                        <SideLabel>{content.sectionTitles?.skills || 'Skills'}</SideLabel>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             {skillGroups.map((group: any, idx: number) => (
                                 <div key={idx}>
@@ -272,7 +272,7 @@ export default function ModernTemplate({
                 {/* Education */}
                 {content.education && content.education.length > 0 && (
                     <div style={{ padding: '1.4rem 1.8rem' }}>
-                        <SideLabel>Education</SideLabel>
+                        <SideLabel>{content.sectionTitles?.education || 'Education'}</SideLabel>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             {content.education.map((edu, idx) => (
                                 <div key={idx}>
@@ -317,7 +317,7 @@ export default function ModernTemplate({
 
                 {/* ── Professional Summary ── */}
                 <section>
-                    <MainHeading>Profile</MainHeading>
+                    <MainHeading>{content.sectionTitles?.professionalSummary || 'Professional Summary'}</MainHeading>
                     {isEditingSummary ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                             <textarea
@@ -408,7 +408,7 @@ export default function ModernTemplate({
                 {/* ── Experience ── */}
                 {content.workExperience && content.workExperience.length > 0 && (
                     <section>
-                        <MainHeading>Experience</MainHeading>
+                        <MainHeading>{content.sectionTitles?.workExperience || 'Experience'}</MainHeading>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.4rem' }}>
                             {content.workExperience.map((exp, idx) => (
                                 <div
@@ -544,7 +544,7 @@ export default function ModernTemplate({
                 {/* ── Projects ── */}
                 {content.projects && content.projects.length > 0 && (
                     <section>
-                        <MainHeading>Projects</MainHeading>
+                        <MainHeading>{content.sectionTitles?.projects || 'Projects'}</MainHeading>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             {content.projects.map((proj, idx) => (
                                 <div
