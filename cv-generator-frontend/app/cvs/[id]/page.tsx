@@ -39,7 +39,7 @@ export default function CVDetailsPage() {
         if (!cv) return;
 
         try {
-            const toastId = toast.loading('PDF yüksek kalitede hazırlanıyor...');
+            const toastId = toast.loading('Preparing high quality PDF...');
             console.log('Starting PDF generation with clone strategy...');
 
             // Dynamically import libraries
@@ -52,14 +52,14 @@ export default function CVDetailsPage() {
             } catch (impErr) {
                 console.error('Library import failed:', impErr);
                 toast.dismiss(toastId);
-                toast.error('Gerekli kütüphaneler yüklenemedi.');
+                toast.error('Required libraries could not be loaded.');
                 return;
             }
 
             const sourceElement = document.getElementById('cv-preview');
             if (!sourceElement) {
                 toast.dismiss(toastId);
-                toast.error('CV görüntülenemedi.');
+                toast.error('CV could not be displayed.');
                 return;
             }
 
@@ -124,8 +124,8 @@ export default function CVDetailsPage() {
                 document.body.removeChild(container);
 
                 toast.dismiss(toastId);
-                const errMsg = captureError?.message || 'Bilinmeyen hata';
-                toast.error(`PDF oluşturulurken hata: ${errMsg}`);
+                const errMsg = captureError?.message || 'Unknown error';
+                toast.error(`Error creating PDF: ${errMsg}`);
                 return;
             }
 
@@ -172,12 +172,12 @@ export default function CVDetailsPage() {
             document.body.removeChild(container);
 
             toast.dismiss(toastId);
-            toast.success('CV başarıyla indirildi');
+            toast.success('CV downloaded successfully');
 
         } catch (error: any) {
             console.error('PDF Generation Pipeline Error:', error);
             toast.dismiss();
-            toast.error(`Beklenmeyen hata: ${error?.message}`);
+            toast.error(`Unexpected error: ${error?.message}`);
         }
     };
 

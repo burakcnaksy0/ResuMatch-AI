@@ -179,3 +179,9 @@ export const subscriptionApi = {
     upgrade: (billingCycle: 'monthly' | 'yearly') => api.post('/subscription/upgrade', { billingCycle }),
     downgrade: () => api.post('/subscription/downgrade'),
 };
+
+// Feedback API
+export const feedbackApi = {
+    create: (data: { description: string }) => api.post('/feedback', data),
+    getAll: () => api.get('/feedback'),
+};

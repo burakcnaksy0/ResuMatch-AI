@@ -5,62 +5,71 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export interface CvData {
-    fullName: string;
-    jobTitle: string;
-    company: string;
-    generationDate: string;
-    professionalSummary: string;
-    workExperience: any[];
-    education: any[];
-    skills: any[];
-    skillGroups?: { category: string; skills: any[] }[];
-    projects: any[];
-    profilePictureUrl?: string; // Optional URL for the profile picture
+  fullName: string;
+  jobTitle: string;
+  company: string;
+  generationDate: string;
+  professionalSummary: string;
+  workExperience: any[];
+  education: any[];
+  skills: any[];
+  skillGroups?: { category: string; skills: any[] }[];
+  projects: any[];
+  profilePictureUrl?: string; // Optional URL for the profile picture
 }
 
 @Injectable()
 export class PdfService {
-    async generatePdf(data: CvData, outputFilename: string, templateName: string = 'modern'): Promise<string> {
-        let templatePath = path.join(process.cwd(), `src/pdf/templates/${templateName.toLowerCase()}.hbs`);
+  async generatePdf(
+    data: CvData,
+    outputFilename: string,
+    templateName: string = 'modern',
+  ): Promise<string> {
+    let templatePath = path.join(
+      process.cwd(),
+      `src/pdf/templates/${templateName.toLowerCase()}.hbs`,
+    );
 
-        if (!fs.existsSync(templatePath)) {
-            console.warn(`Template ${templateName} not found, falling back to modern`);
-            templatePath = path.join(process.cwd(), 'src/pdf/templates/modern.hbs');
-        }
-
-        const templateHtml = fs.readFileSync(templatePath, 'utf8');
-        const template = handlebars.compile(templateHtml);
-        const html = template(data);
-
-        const browser = await puppeteer.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        });
-        const page = await browser.newPage();
-
-        await page.setContent(html, { waitUntil: 'networkidle0' });
-
-        const uploadsDir = path.join(process.cwd(), 'uploads/cvs');
-        if (!fs.existsSync(uploadsDir)) {
-            fs.mkdirSync(uploadsDir, { recursive: true });
-        }
-
-        const filePath = path.join(uploadsDir, outputFilename);
-        const relativePath = `uploads/cvs/${outputFilename}`;
-
-        await page.pdf({
-            path: filePath,
-            format: 'A4',
-            printBackground: true,
-            margin: {
-                top: '0px',
-                right: '0px',
-                bottom: '0px',
-                left: '0px',
-            },
-        });
-
-        await browser.close();
-        return relativePath;
+    if (!fs.existsSync(templatePath)) {
+      console.warn(
+        `Template ${templateName} not found, falling back to modern`,
+      );
+      templatePath = path.join(process.cwd(), 'src/pdf/templates/modern.hbs');
     }
+
+    const templateHtml = fs.readFileSync(templatePath, 'utf8');
+    const template = handlebars.compile(templateHtml);
+    const html = template(data);
+
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+    const page = await browser.newPage();
+
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+
+    const uploadsDir = path.join(process.cwd(), 'uploads/cvs');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+
+    const filePath = path.join(uploadsDir, outputFilename);
+    const relativePath = `uploads/cvs/${outputFilename}`;
+
+    await page.pdf({
+      path: filePath,
+      format: 'A4',
+      printBackground: true,
+      margin: {
+        top: '0px',
+        right: '0px',
+        bottom: '0px',
+        left: '0px',
+      },
+    });
+
+    await browser.close();
+    return relativePath;
+  }
 }

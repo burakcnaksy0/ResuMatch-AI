@@ -7,9 +7,9 @@ import { AiModule } from '../ai/ai.module';
 import { ProfileModule } from '../profile/profile.module';
 
 @Module({
-    imports: [PrismaModule, AiModule, ProfileModule],
-    controllers: [JobPostingController],
-    providers: [JobPostingService],
-    exports: [JobPostingService],
+  imports: [PrismaModule, AiModule, ProfileModule],
+  controllers: [JobPostingController],
+  providers: [JobPostingService],
+  exports: [JobPostingService],
 })
-export class JobPostingModule { }
+export class JobPostingModule {}

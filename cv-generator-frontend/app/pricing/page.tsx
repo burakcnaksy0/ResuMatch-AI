@@ -38,7 +38,7 @@ export default function PricingPage() {
             setPricing(response.data);
         } catch (error) {
             console.error('Failed to fetch pricing:', error);
-            toast.error('Fiyatlandırma bilgileri yüklenemedi');
+            toast.error('Failed to load pricing information');
         } finally {
             setLoading(false);
         }
@@ -46,7 +46,7 @@ export default function PricingPage() {
 
     const handleUpgrade = async (billingCycle: 'monthly' | 'yearly') => {
         if (!isAuthenticated) {
-            toast.error('Lütfen önce giriş yapın');
+            toast.error('Please log in first');
             router.push('/auth/login');
             return;
         }
@@ -60,7 +60,7 @@ export default function PricingPage() {
             window.location.href = '/profile';
         } catch (error: any) {
             console.error('Upgrade failed:', error);
-            toast.error(error.response?.data?.message || 'Yükseltme başarısız oldu');
+            toast.error(error.response?.data?.message || 'Upgrade failed');
         } finally {
             setUpgrading(null);
         }
@@ -71,7 +71,7 @@ export default function PricingPage() {
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#181c24] via-[#232a36] to-[#10131a]">
                 <div className="text-center">
                     <Loader2 className="w-12 h-12 text-[#3b82f6] animate-spin mx-auto mb-4" />
-                    <p className="text-blue-200">Fiyatlandırma bilgileri yükleniyor...</p>
+                    <p className="text-blue-200">Loading pricing information...</p>
                 </div>
             </div>
         );
@@ -84,13 +84,13 @@ export default function PricingPage() {
                 <div className="text-center mb-16">
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#232a36] rounded-full border border-[#3b82f6] mb-6">
                         <Sparkles className="w-4 h-4 text-[#3b82f6]" />
-                        <span className="text-sm font-medium text-blue-200">Basit ve Şeffaf Fiyatlandırma</span>
+                        <span className="text-sm font-medium text-blue-200">Simple and Transparent Pricing</span>
                     </div>
                     <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                        Kariyerini Bir Sonraki Seviyeye Taşı
+                        Take Your Career to the Next Level
                     </h1>
                     <p className="text-xl text-blue-200 max-w-2xl mx-auto">
-                        İhtiyaçlarına en uygun planı seç ve AI destekli CV oluşturmaya başla
+                        Choose the plan that best fits your needs and start creating AI-powered CVs
                     </p>
                 </div>
 
@@ -101,15 +101,15 @@ export default function PricingPage() {
                             <div className="flex items-center gap-3">
                                 <Crown className="w-8 h-8 text-white" />
                                 <div>
-                                    <h3 className="text-xl font-bold text-white">Pro Üyesin!</h3>
-                                    <p className="text-white/90">Sınırsız CV oluşturma hakkına sahipsin</p>
+                                    <h3 className="text-xl font-bold text-white">You're a Pro Member!</h3>
+                                    <p className="text-white/90">You have unlimited CV generation access</p>
                                 </div>
                             </div>
                             {subscription.subscriptionEndDate && (
                                 <div className="text-right">
-                                    <p className="text-sm text-white/70">Abonelik Bitiş Tarihi</p>
+                                    <p className="text-sm text-white/70">Subscription End Date</p>
                                     <p className="text-lg font-semibold text-white">
-                                        {new Date(subscription.subscriptionEndDate).toLocaleDateString('tr-TR')}
+                                        {new Date(subscription.subscriptionEndDate).toLocaleDateString('en-US')}
                                     </p>
                                 </div>
                             )}
@@ -123,12 +123,12 @@ export default function PricingPage() {
                     <div className="bg-[#232a36] rounded-2xl border-2 border-[#232a36] p-8 hover:border-[#3b82f6] transition-all">
                         <div className="mb-6">
                             <h3 className="text-2xl font-bold text-white mb-2">Free</h3>
-                            <p className="text-blue-200">Başlamak için mükemmel</p>
+                            <p className="text-blue-200">Perfect to get started</p>
                         </div>
                         <div className="mb-6">
                             <div className="flex items-baseline gap-2">
                                 <span className="text-5xl font-bold text-white">$0</span>
-                                <span className="text-blue-200">/süresiz</span>
+                                <span className="text-blue-200">/forever</span>
                             </div>
                         </div>
                         <ul className="space-y-4 mb-8">
@@ -144,14 +144,14 @@ export default function PricingPage() {
                                 disabled
                                 className="w-full py-3 px-6 bg-[#181c24] text-blue-300 font-semibold rounded-xl cursor-not-allowed"
                             >
-                                Mevcut Planın
+                                Current Plan
                             </button>
                         ) : (
                             <Link
                                 href="/auth/register"
                                 className="block w-full py-3 px-6 bg-[#181c24] hover:bg-[#232a36] text-white font-semibold rounded-xl text-center transition-colors"
                             >
-                                Başla
+                                Get Started
                             </Link>
                         )}
                     </div>
@@ -162,7 +162,7 @@ export default function PricingPage() {
                         <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                             <div className="bg-amber-500 text-white text-sm font-bold px-6 py-1.5 rounded-full flex items-center gap-1.5">
                                 <Star className="w-4 h-4" />
-                                En Popüler
+                                Most Popular
                             </div>
                         </div>
 
@@ -171,7 +171,7 @@ export default function PricingPage() {
                                 <Crown className="w-6 h-6 text-white" />
                                 <h3 className="text-2xl font-bold text-white">Pro</h3>
                             </div>
-                            <p className="text-blue-100">Sınırsız imkanlar</p>
+                            <p className="text-blue-100">Unlimited possibilities</p>
                         </div>
 
                         {/* Pricing Options */}
@@ -179,10 +179,10 @@ export default function PricingPage() {
                             {/* Monthly */}
                             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-white font-semibold">Aylık</span>
+                                    <span className="text-white font-semibold">Monthly</span>
                                     <div className="text-right">
                                         <div className="text-3xl font-bold text-white">${pricing?.pro?.monthly?.price}</div>
-                                        <div className="text-sm text-blue-100">/ ay</div>
+                                        <div className="text-sm text-blue-100">/ month</div>
                                     </div>
                                 </div>
                                 <button
@@ -193,10 +193,10 @@ export default function PricingPage() {
                                     {upgrading === 'monthly' ? (
                                         <>
                                             <Loader2 className="w-4 h-4 animate-spin" />
-                                            İşleniyor...
+                                            Processing...
                                         </>
                                     ) : (
-                                        subscription?.subscriptionType === 'PRO' && subscription?.isActive ? 'Aktif Plan' : 'Aylık Seç'
+                                        subscription?.subscriptionType === 'PRO' && subscription?.isActive ? 'Active Plan' : 'Choose Monthly'
                                     )}
                                 </button>
                             </div>
@@ -204,13 +204,13 @@ export default function PricingPage() {
                             {/* Yearly */}
                             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border-2 border-amber-400 relative">
                                 <div className="absolute -top-3 right-4 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                                    %33 İndirim
+                                    33% Off
                                 </div>
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-white font-semibold">Yıllık</span>
+                                    <span className="text-white font-semibold">Yearly</span>
                                     <div className="text-right">
                                         <div className="text-3xl font-bold text-white">${pricing?.pro?.yearly?.price}</div>
-                                        <div className="text-sm text-blue-100">/ yıl (${pricing?.pro?.yearly?.pricePerMonth}/ay)</div>
+                                        <div className="text-sm text-blue-100">/ year (${pricing?.pro?.yearly?.pricePerMonth}/mo)</div>
                                     </div>
                                 </div>
                                 <button
@@ -221,10 +221,10 @@ export default function PricingPage() {
                                     {upgrading === 'yearly' ? (
                                         <>
                                             <Loader2 className="w-4 h-4 animate-spin" />
-                                            İşleniyor...
+                                            Processing...
                                         </>
                                     ) : (
-                                        subscription?.subscriptionType === 'PRO' && subscription?.isActive ? 'Aktif Plan' : 'Yıllık Seç (En İyi Değer)'
+                                        subscription?.subscriptionType === 'PRO' && subscription?.isActive ? 'Active Plan' : 'Choose Yearly (Best Value)'
                                     )}
                                 </button>
                             </div>
@@ -243,33 +243,33 @@ export default function PricingPage() {
 
                 {/* Features Comparison */}
                 <div className="max-w-4xl mx-auto mb-16">
-                    <h2 className="text-3xl font-bold text-white text-center mb-8">Neden Pro?</h2>
+                    <h2 className="text-3xl font-bold text-white text-center mb-8">Why Pro?</h2>
                     <div className="grid md:grid-cols-3 gap-6">
                         <div className="bg-[#232a36] rounded-xl p-6 border border-[#232a36]">
                             <div className="w-12 h-12 bg-[#181c24] rounded-xl flex items-center justify-center mb-4">
                                 <Zap className="w-6 h-6 text-[#3b82f6]" />
                             </div>
-                            <h3 className="text-lg font-bold text-white mb-2">Sınırsız Oluşturma</h3>
+                            <h3 className="text-lg font-bold text-white mb-2">Unlimited Generation</h3>
                             <p className="text-blue-200 text-sm">
-                                İstediğin kadar CV oluştur, her iş başvurusu için özelleştir
+                                Create as many CVs as you want, customize for every job application
                             </p>
                         </div>
                         <div className="bg-[#232a36] rounded-xl p-6 border border-[#232a36]">
                             <div className="w-12 h-12 bg-[#181c24] rounded-xl flex items-center justify-center mb-4">
                                 <Clock className="w-6 h-6 text-[#6366f1]" />
                             </div>
-                            <h3 className="text-lg font-bold text-white mb-2">Öncelikli İşleme</h3>
+                            <h3 className="text-lg font-bold text-white mb-2">Priority Processing</h3>
                             <p className="text-blue-200 text-sm">
-                                AI işlemlerinde öncelikli sıra, daha hızlı sonuçlar
+                                Priority in AI processing queue, faster results
                             </p>
                         </div>
                         <div className="bg-[#232a36] rounded-xl p-6 border border-[#232a36]">
                             <div className="w-12 h-12 bg-[#181c24] rounded-xl flex items-center justify-center mb-4">
                                 <Shield className="w-6 h-6 text-[#a21caf]" />
                             </div>
-                            <h3 className="text-lg font-bold text-white mb-2">Premium Destek</h3>
+                            <h3 className="text-lg font-bold text-white mb-2">Premium Support</h3>
                             <p className="text-blue-200 text-sm">
-                                Öncelikli müşteri desteği ve kişiselleştirilmiş yardım
+                                Priority customer support and personalized assistance
                             </p>
                         </div>
                     </div>
@@ -277,33 +277,33 @@ export default function PricingPage() {
 
                 {/* FAQ Section */}
                 <div className="max-w-3xl mx-auto">
-                    <h2 className="text-3xl font-bold text-white text-center mb-8">Sık Sorulan Sorular</h2>
+                    <h2 className="text-3xl font-bold text-white text-center mb-8">Frequently Asked Questions</h2>
                     <div className="space-y-4">
                         <details className="bg-[#232a36] rounded-xl p-6 border border-[#232a36] group">
                             <summary className="font-semibold text-white cursor-pointer list-none flex items-center justify-between">
-                                Free planda kaç CV oluşturabilirim?
+                                How many CVs can I create on the Free plan?
                                 <span className="text-[#3b82f6] group-open:rotate-180 transition-transform">▼</span>
                             </summary>
                             <p className="text-blue-200 mt-4">
-                                Free planda toplam 3 iş bazlı CV ve 1 profil bazlı CV oluşturabilirsiniz. Bu limitler toplam limittir, aylık değildir.
+                                On the Free plan, you can create a total of 3 job-based CVs and 1 profile-based CV. These are total limits, not monthly.
                             </p>
                         </details>
                         <details className="bg-[#232a36] rounded-xl p-6 border border-[#232a36] group">
                             <summary className="font-semibold text-white cursor-pointer list-none flex items-center justify-between">
-                                Pro planı istediğim zaman iptal edebilir miyim?
+                                Can I cancel my Pro plan anytime?
                                 <span className="text-[#3b82f6] group-open:rotate-180 transition-transform">▼</span>
                             </summary>
                             <p className="text-blue-200 mt-4">
-                                Evet, istediğiniz zaman iptal edebilirsiniz. Mevcut dönem sonuna kadar Pro özelliklerini kullanmaya devam edersiniz.
+                                Yes, you can cancel anytime. You'll continue to have Pro features until the end of your current billing period.
                             </p>
                         </details>
                         <details className="bg-[#232a36] rounded-xl p-6 border border-[#232a36] group">
                             <summary className="font-semibold text-white cursor-pointer list-none flex items-center justify-between">
-                                Yıllık plan daha mı avantajlı?
+                                Is the yearly plan more beneficial?
                                 <span className="text-[#3b82f6] group-open:rotate-180 transition-transform">▼</span>
                             </summary>
                             <p className="text-blue-200 mt-4">
-                                Evet! Yıllık planda aylık $8.25 ödersiniz, aylık plana göre %33 tasarruf edersiniz (yıllık $81 tasarruf).
+                                Yes! With the yearly plan, you pay $8.25/month, saving 33% compared to the monthly plan ($81 annual savings).
                             </p>
                         </details>
                     </div>

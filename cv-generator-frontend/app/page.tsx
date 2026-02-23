@@ -1,7 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { generatedCVApi, jobPostingApi } from '@/lib/api/client';
 import {
   Briefcase,
   FileText,
@@ -21,75 +23,93 @@ import {
   Brain,
   ChevronRight,
   Crown,
-  Infinity
+  Infinity as InfinityIcon,
+  User
 } from 'lucide-react';
 import Image from 'next/image';
 import { APP_NAME } from '@/lib/constants';
 
 export default function Home() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [latestCV, setLatestCV] = useState<any>(null);
+  const [latestJob, setLatestJob] = useState<any>(null);
 
-  const stats = [
-    { label: 'CVs Generated', value: '50,000+' },
-    { label: 'Success Rate', value: '94%' },
-    { label: 'Happy Users', value: '15,000+' },
-    { label: 'Time Saved', value: '100k hrs' },
-  ];
+  useEffect(() => {
+    if (isAuthenticated && user?.id) {
+      // Fetch latest CV
+      generatedCVApi.getAll(user.id).then(res => {
+        if (res.data && res.data.length > 0) {
+          // Assuming the API returns sorted by recently created, or we sort it here
+          const sorted = res.data.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          setLatestCV(sorted[0]);
+        }
+      }).catch(err => console.error(err));
+
+      // Fetch latest Job Posting
+      jobPostingApi.getAll(user.id).then(res => {
+        if (res.data && res.data.length > 0) {
+          const sorted = res.data.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          setLatestJob(sorted[0]);
+        }
+      }).catch(err => console.error(err));
+    }
+  }, [isAuthenticated, user]);
 
   const features = [
     {
       icon: Brain,
       title: 'AI-Powered Analysis',
-      description: 'Advanced AI analyzes job descriptions to extract key requirements, skills, and keywords automatically.',
-      gradient: 'from-purple-500 to-indigo-500',
+      description: 'Our advanced AI engine deeply analyzes job descriptions to extract critical keywords and requirements.',
+      gradient: 'from-violet-600 to-indigo-600',
     },
     {
       icon: Target,
-      title: 'Perfect Job Match',
-      description: 'Tailors your CV to match specific job requirements, highlighting relevant experience and skills.',
+      title: 'Precision Matching',
+      description: 'Automatically tailors your experience to align perfectly with the job, boosting your ATS score.',
       gradient: 'from-blue-500 to-cyan-500',
     },
     {
       icon: Zap,
-      title: 'Lightning Fast',
-      description: 'Generate a professional, customized CV in under 30 seconds. No more hours of manual formatting.',
-      gradient: 'from-amber-500 to-orange-500',
+      title: 'Instant Generation',
+      description: 'Create a tailored, professional application in seconds, not hours. Speed is your advantage.',
+      gradient: 'from-amber-400 to-orange-500',
     },
     {
       icon: Shield,
-      title: 'ATS Optimized',
-      description: 'Ensures your CV passes Applicant Tracking Systems with proper formatting and keyword optimization.',
-      gradient: 'from-green-500 to-emerald-500',
+      title: 'ATS Compliance',
+      description: 'Formatting that passes automated filters effortlessly. Get your CV in front of human eyes.',
+      gradient: 'from-emerald-500 to-green-600',
     },
     {
-      icon: FileCheck,
-      title: 'Multiple Templates',
-      description: 'Choose from professionally designed templates that suit different industries and job levels.',
+      icon: Layout,
+      title: 'Premium Templates',
+      description: 'Access a library of sleek, modern designs that adapt to your content and personal brand.',
       gradient: 'from-pink-500 to-rose-500',
     },
     {
       icon: Download,
-      title: 'Export Anywhere',
-      description: 'Download your CV in PDF, DOCX, or other formats. Print-ready and digital-friendly.',
-      gradient: 'from-violet-500 to-purple-500',
+      title: 'Smart Export',
+      description: 'Download pixel-perfect PDFs with interactive links and optimized metadata.',
+      gradient: 'from-purple-500 to-fuchsia-500',
     },
   ];
 
   const steps = [
     {
       number: '01',
-      title: 'Upload Your Information',
-      description: 'Add your work experience, education, skills, and achievements to your profile.',
+      title: 'Create Profile',
+      description: 'Input your career history once. We store your experience, skills, and education securely.',
     },
     {
       number: '02',
-      title: 'Paste Job Description',
-      description: 'Copy the job posting you\'re interested in. Our AI will analyze the requirements.',
+      title: 'Target Job',
+      description: 'Paste the URL or text of the job you want. Our AI analyzes the specific requirements.',
     },
     {
       number: '03',
-      title: 'Generate & Download',
-      description: 'Get a perfectly tailored CV in seconds. Download and apply with confidence.',
+      title: 'Generate',
+      description: 'Watch as a custom CV is instanty created, optimizing your profile for that tangible role.',
     },
   ];
 
@@ -98,578 +118,465 @@ export default function Home() {
       name: 'Sarah Johnson',
       role: 'Software Engineer',
       company: 'Tech Corp',
-      content: 'I got 3x more interview callbacks after using this AI CV generator. The job-specific optimization really works!',
+      content: 'I got 3x more interview callbacks. The AI tailored my generic experience to exactly what they were looking for.',
       rating: 5,
     },
     {
       name: 'Michael Chen',
-      role: 'Marketing Manager',
+      role: 'Product Manager',
       company: 'StartupXYZ',
-      content: 'Saved me hours of work for each application. The ATS optimization helped me land my dream job.',
+      content: 'The ATS optimization requires zero effort. It just works. Landed my dream job in 2 weeks.',
       rating: 5,
     },
     {
-      name: 'Emily Rodriguez',
-      role: 'Product Designer',
-      company: 'Design Studio',
-      content: 'The templates are beautiful and professional. Finally, a CV tool that understands what recruiters want.',
+      name: 'Emily R.',
+      role: 'UX Designer',
+      company: 'Creative Studio',
+      content: 'Beautiful templates that actually respect visual hierarchy. Finally, a CV tool designed for humans and bots.',
       rating: 5,
     },
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#181c24] via-[#232a36] to-[#10131a] text-white">
-      <main className="flex-grow">
-        {/* Hero Section */}
-        <section className="relative pt-16 pb-24 md:pt-24 md:pb-32 overflow-hidden">
-          {/* Animated Background */}
-          <div className="absolute inset-0 -z-10">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#181c24] via-[#232a36] to-[#10131a]" />
-            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" />
-            <div className="absolute top-0 left-0 w-96 h-96 bg-purple-900 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" />
-            <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-indigo-900 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000" />
+    <div className="flex flex-col min-h-screen bg-[#0B0F19] text-white overflow-x-hidden selection:bg-blue-500/30">
+
+      {/* Background Ambience */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[128px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[128px]" />
+      </div>
+
+      <main className="relative z-10">
+
+        {/* Navigation / Header */}
+        <header className="absolute top-0 w-full z-50 pt-6 px-6">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <span className="font-bold text-xl tracking-tight">ResuMatch AI</span>
+            </div>
+            <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
+              <a href="#features" className="hover:text-white transition-colors">Features</a>
+              <a href="#how-it-works" className="hover:text-white transition-colors">How it Works</a>
+              <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+            </nav>
+            <div className="flex items-center gap-4">
+              <Link href="/auth/login" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                Sign In
+              </Link>
+              <Link href="/auth/register" className="px-5 py-2.5 text-sm font-bold bg-white text-black rounded-full hover:bg-gray-100 transition-colors">
+                Get Started
+              </Link>
+            </div>
           </div>
+        </header>
 
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="text-center">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#232a36]/80 backdrop-blur-sm border border-blue-800 text-blue-300 text-sm font-medium mb-8 shadow-sm">
-                <Sparkles className="w-4 h-4" />
-                <span>15.000+ profesyonel tarafından güvenildi</span>
-              </div>
+        {/* Hero Section */}
+        <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6">
+          <div className="max-w-5xl mx-auto text-center">
 
-              {/* Heading */}
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 leading-tight">
-                Hayalindeki İşi Kap!
-                <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#3b82f6] via-[#6366f1] to-[#a21caf]">
-                  AI Destekli CV'lerle
-                </span>
-              </h1>
-
-              <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-                Sıradan CV'lere elveda! Yapay zeka ile iş ilanlarını analiz eden ve sana özel, öne çıkan CV'ler oluştur.
-              </p>
-
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-                <Link
-                  href={isAuthenticated ? "/dashboard" : "/auth/register"}
-                  className="group w-full sm:w-auto px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-[#3b82f6] to-[#6366f1] rounded-full hover:from-[#2563eb] hover:to-[#4f46e5] transition-all duration-200 shadow-xl shadow-blue-900 hover:shadow-2xl hover:shadow-blue-800 flex items-center justify-center gap-2"
-                >
-                  Hemen Başla
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <a
-                  href="#how-it-works"
-                  className="w-full sm:w-auto px-8 py-4 text-lg font-semibold text-blue-200 bg-[#232a36] border-2 border-[#3b82f6] rounded-full hover:border-[#6366f1] hover:bg-[#181c24] transition-all duration-200 flex items-center justify-center gap-2 shadow-sm"
-                >
-                  Nasıl Çalışır?
-                  <ChevronRight className="w-5 h-5" />
-                </a>
-              </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-                {stats.map((stat, index) => (
-                  <div key={index} className="text-center">
-                    <div className="text-3xl md:text-4xl font-bold text-white mb-1">
-                      {stat.value}
-                    </div>
-                    <div className="text-sm text-blue-200">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-900/30 border border-blue-500/30 text-blue-300 text-xs font-semibold mb-8 backdrop-blur-md animate-fade-in-up">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+              </span>
+              Now with AI-Powered Cover Letters
             </div>
 
-            {/* Dashboard Preview */}
-            <div className="relative mx-auto max-w-6xl mt-20">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6] to-[#6366f1] rounded-3xl blur-3xl opacity-20" />
-              <div className="relative rounded-2xl bg-gradient-to-b from-[#232a36]/60 to-[#10131a]/80 p-3 ring-1 ring-inset ring-[#232a36]">
-                <div className="rounded-xl bg-[#181c24] shadow-2xl overflow-hidden border border-[#232a36]">
-                  {isAuthenticated ? (
-                    // Authenticated User - Show Dashboard Summary
-                    <div className="p-8 bg-gradient-to-br from-[#232a36] to-[#181c24]">
-                      {/* Header */}
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-[#181c24] rounded-lg">
-                            <Layout className="w-6 h-6 text-[#3b82f6]" />
-                          </div>
-                          <div>
-                            <h3 className="text-xl font-bold text-white">Dashboard Özeti</h3>
-                            <p className="text-sm text-blue-200">Son aktiviteleriniz ve CV'leriniz</p>
-                          </div>
-                        </div>
-                        <Link
-                          href="/dashboard"
-                          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#3b82f6] to-[#6366f1] text-white text-sm font-semibold rounded-lg hover:from-[#2563eb] hover:to-[#4f46e5] transition-all"
-                        >
-                          Dashboard'a Git
-                          <ArrowRight className="w-4 h-4" />
-                        </Link>
-                      </div>
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-[1.1]">
+              Craft Your Perfect <br className="hidden md:block" />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+                Job-Winning CV
+              </span>
+            </h1>
 
-                      {/* Quick Stats */}
-                      <div className="grid grid-cols-4 gap-4 mb-6">
-                        <div className="bg-[#181c24] rounded-xl p-4 border border-[#232a36]">
-                          <div className="flex items-center gap-2 mb-2">
-                            <FileText className="w-4 h-4 text-[#3b82f6]" />
-                            <span className="text-xs text-blue-200">Toplam CV</span>
-                          </div>
-                          <p className="text-2xl font-bold text-white">12</p>
-                        </div>
-                        <div className="bg-[#181c24] rounded-xl p-4 border border-[#232a36]">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Target className="w-4 h-4 text-[#6366f1]" />
-                            <span className="text-xs text-blue-200">Profil</span>
-                          </div>
-                          <p className="text-2xl font-bold text-white">85%</p>
-                        </div>
-                        <div className="bg-[#181c24] rounded-xl p-4 border border-[#232a36]">
-                          <div className="flex items-center gap-2 mb-2">
-                            <TrendingUp className="w-4 h-4 text-emerald-500" />
-                            <span className="text-xs text-blue-200">Bu Ay</span>
-                          </div>
-                          <p className="text-2xl font-bold text-white">5</p>
-                        </div>
-                        <div className="bg-[#181c24] rounded-xl p-4 border border-[#232a36]">
-                          <div className="flex items-center gap-2 mb-2">
-                            <CheckCircle className="w-4 h-4 text-green-500" />
-                            <span className="text-xs text-blue-200">Başarı</span>
-                          </div>
-                          <p className="text-2xl font-bold text-white">94%</p>
-                        </div>
-                      </div>
+            <p className="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+              Stop sending generic resumes. Our AI analyzes job descriptions and tailors your CV to pass ATS filters and impress recruiters instantly.
+            </p>
 
-                      {/* Recent CVs */}
-                      <div>
-                        <h4 className="text-sm font-semibold text-blue-200 mb-3">Son CV'lerim</h4>
-                        <div className="space-y-2">
-                          {[
-                            { title: 'Senior Frontend Developer', company: 'TechCorp', time: '2 saat önce', status: 'active' },
-                            { title: 'Full Stack Engineer', company: 'StartupXYZ', time: '1 gün önce', status: 'downloaded' },
-                            { title: 'React Developer', company: 'Digital Agency', time: '3 gün önce', status: 'active' },
-                          ].map((cv, idx) => (
-                            <div
-                              key={idx}
-                              className="flex items-center gap-3 p-3 bg-[#181c24] rounded-lg border border-[#232a36] hover:border-[#3b82f6] transition-colors group"
-                            >
-                              <FileText className="w-5 h-5 text-[#3b82f6] group-hover:text-white" />
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-white truncate">{cv.title}</p>
-                                <p className="text-xs text-blue-200">{cv.company} • {cv.time}</p>
-                              </div>
-                              <span className={`text-xs px-2 py-1 rounded-full ${
-                                cv.status === 'downloaded'
-                                  ? 'bg-green-900/30 text-green-300'
-                                  : 'bg-blue-900/30 text-blue-300'
-                              }`}>
-                                {cv.status === 'downloaded' ? 'İndirildi' : 'Aktif'}
-                              </span>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
+              <Link
+                href={isAuthenticated ? "/dashboard" : "/auth/register"}
+                className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full font-bold text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all duration-300 overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-500 ease-out -skew-x-12 origin-left" />
+                <span className="relative flex items-center gap-2">
+                  Build My CV Now
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+                </span>
+              </Link>
+
+              <a
+                href="#how-it-works"
+                className="px-8 py-4 bg-[#1a1f2e] border border-white/10 rounded-full font-semibold text-gray-300 hover:bg-[#232a36] hover:text-white hover:border-white/20 transition-all duration-300"
+              >
+                See How It Works
+              </a>
+            </div>
+
+            {/* Dashboard Preview Section */}
+            <div className="relative mx-auto max-w-6xl group perspective-1000">
+              <div className="absolute inset-0 bg-gradient-to-t from-blue-600/20 to-purple-600/20 rounded-xl blur-3xl opacity-50 group-hover:opacity-75 transition-opacity duration-700" />
+
+              <div className="relative rounded-xl border border-white/10 bg-[#131620]/80 backdrop-blur-xl shadow-2xl overflow-hidden transform group-hover:rotate-x-1 transition-transform duration-700 ease-out">
+                {/* Browser Controls */}
+                <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-[#1a1f2e]/50">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
+                    <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50" />
+                    <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50" />
+                  </div>
+                  <div className="ml-4 px-3 py-1 bg-black/20 rounded-md text-[10px] text-gray-500 font-mono w-64">
+                    https://resumatch.ai/dashboard
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="p-8">
+                  {isAuthenticated && (latestCV || latestJob) ? (
+                    <div className="grid md:grid-cols-2 gap-8">
+                      {/* Latest CV Card */}
+                      <div className="group/card relative bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-1 border border-white/10 overflow-hidden hover:border-blue-500/30 transition-colors">
+                        <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover/card:opacity-100 transition-opacity" />
+                        <div className="bg-[#151925] rounded-lg p-5 h-full relative z-10">
+                          <div className="flex justify-between items-start mb-4">
+                            <div className="p-3 bg-blue-500/10 rounded-lg text-blue-400">
+                              <FileText className="w-6 h-6" />
                             </div>
-                          ))}
+                            <span className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold bg-white/5 px-2 py-1 rounded">Latest CV</span>
+                          </div>
+
+                          <h3 className="text-lg font-bold text-white mb-1 truncate">
+                            {latestCV ? `CV for ${latestCV.jobTitle || 'General Application'}` : 'No CVs yet'}
+                          </h3>
+                          <p className="text-sm text-gray-400 mb-6">
+                            {latestCV ? new Date(latestCV.createdAt).toLocaleDateString() : 'Create your first CV to see it here.'}
+                          </p>
+
+                          {latestCV ? (
+                            <Link href={`/cvs/${latestCV.id}`} className="inline-flex items-center text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors">
+                              Open PDF Editor <ArrowRight className="w-4 h-4 ml-1" />
+                            </Link>
+                          ) : (
+                            <Link href="/cvs/new" className="inline-flex items-center text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors">
+                              Create Now <ArrowRight className="w-4 h-4 ml-1" />
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Latest Job Card */}
+                      <div className="group/card relative bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-1 border border-white/10 overflow-hidden hover:border-purple-500/30 transition-colors">
+                        <div className="absolute inset-0 bg-purple-500/5 opacity-0 group-hover/card:opacity-100 transition-opacity" />
+                        <div className="bg-[#151925] rounded-lg p-5 h-full min-h-[180px] flex flex-col justify-between relative z-10">
+                          <div>
+                            <div className="flex justify-between items-start mb-4">
+                              <div className="p-3 bg-purple-500/10 rounded-lg text-purple-400">
+                                <Briefcase className="w-6 h-6" />
+                              </div>
+                              <span className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold bg-white/5 px-2 py-1 rounded">Last Analyzed Job</span>
+                            </div>
+
+                            {latestJob ? (
+                              <>
+                                <h3 className="text-lg font-bold text-white mb-2 truncate" title={latestJob.title || 'Untitled Position'}>
+                                  {latestJob.title || 'Untitled Position'}
+                                </h3>
+                                <div className="flex flex-wrap items-center gap-2 mb-4">
+                                  <span className="text-sm text-gray-400 flex items-center gap-1">
+                                    {latestJob.company || 'Unknown Company'}
+                                  </span>
+                                  {latestJob.matchScore !== undefined && (
+                                    <>
+                                      <span className="w-1 h-1 bg-gray-600 rounded-full" />
+                                      <span className={`text-xs px-2 py-0.5 rounded-full border ${latestJob.matchScore >= 80 ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+                                          latestJob.matchScore >= 50 ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' :
+                                            'bg-red-500/10 text-red-400 border-red-500/20'
+                                        }`}>
+                                        Match: {latestJob.matchScore}%
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <h3 className="text-lg font-bold text-white mb-2">No Jobs Analyzed</h3>
+                                <p className="text-sm text-gray-400 mb-2">Analyze a job description to get tailored advice.</p>
+                              </>
+                            )}
+                          </div>
+
+                          <div className="mt-2">
+                            {latestJob ? (
+                              <Link href={`/jobs/${latestJob.id}`} className="inline-flex items-center text-sm text-purple-400 hover:text-purple-300 font-medium transition-colors group-hover/card:translate-x-1 duration-200">
+                                View Analysis <ArrowRight className="w-4 h-4 ml-1" />
+                              </Link>
+                            ) : (
+                              <Link href="/jobs/new" className="inline-flex items-center text-sm text-purple-400 hover:text-purple-300 font-medium transition-colors group-hover/card:translate-x-1 duration-200">
+                                Analyze Job <ArrowRight className="w-4 h-4 ml-1" />
+                              </Link>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    // Non-authenticated - Show Demo Preview
-                    <div className="p-8 bg-gradient-to-br from-[#232a36] to-[#181c24]">
-                      {/* Header */}
-                      <div className="text-center mb-8">
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#3b82f6] to-[#6366f1] rounded-2xl mb-4">
-                          <Layout className="w-8 h-8 text-white" />
+                    // Fallback / Static Mockup for Unauthenticated Users
+                    <div className="grid md:grid-cols-3 gap-8">
+                      {/* Sidebar Mock */}
+                      <div className="bg-white/5 rounded-lg p-6 border border-white/5 flex flex-col gap-4">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                            <User className="w-4 h-4 text-blue-400" />
+                          </div>
+                          <div className="h-2 w-20 bg-white/10 rounded" />
                         </div>
-                        <h3 className="text-2xl font-bold text-white mb-2">Dashboard Arayüz Önizlemesi</h3>
-                        <p className="text-blue-200">Kolay & Güçlü CV Oluşturma</p>
+                        {[1, 2, 3].map(i => (
+                          <div key={i} className="h-10 w-full bg-white/5 rounded-lg border border-white/5" />
+                        ))}
                       </div>
 
-                      {/* Demo Stats Grid */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                        <div className="bg-[#181c24] rounded-xl p-4 border border-[#232a36]">
-                          <FileText className="w-5 h-5 text-[#3b82f6] mb-2" />
-                          <p className="text-xs text-blue-200 mb-1">Toplam CV</p>
-                          <p className="text-xl font-bold text-white">50K+</p>
+                      {/* Main Feed Mock */}
+                      <div className="col-span-2 space-y-4">
+                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10 relative overflow-hidden">
+                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-500" />
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center">
+                              <FileText className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-white font-medium text-sm">Senior Frontend Developer CV</span>
+                                <span className="text-[10px] px-1.5 py-0.5 bg-blue-500/20 text-blue-300 rounded border border-blue-500/30">PDF</span>
+                              </div>
+                              <div className="h-3 w-32 bg-white/10 rounded" />
+                            </div>
+                          </div>
+                          <div className="px-3 py-1 bg-green-500/20 text-green-400 text-xs rounded-full border border-green-500/30 shadow-[0_0_10px_rgba(34,197,94,0.2)]">
+                            Match: 98%
+                          </div>
                         </div>
-                        <div className="bg-[#181c24] rounded-xl p-4 border border-[#232a36]">
-                          <Sparkles className="w-5 h-5 text-[#6366f1] mb-2" />
-                          <p className="text-xs text-blue-200 mb-1">Başarı Oranı</p>
-                          <p className="text-xl font-bold text-white">94%</p>
-                        </div>
-                        <div className="bg-[#181c24] rounded-xl p-4 border border-[#232a36]">
-                          <Users className="w-5 h-5 text-emerald-500 mb-2" />
-                          <p className="text-xs text-blue-200 mb-1">Mutlu Kullanıcı</p>
-                          <p className="text-xl font-bold text-white">15K+</p>
-                        </div>
-                        <div className="bg-[#181c24] rounded-xl p-4 border border-[#232a36]">
-                          <Clock className="w-5 h-5 text-amber-500 mb-2" />
-                          <p className="text-xs text-blue-200 mb-1">Zaman Tasarrufu</p>
-                          <p className="text-xl font-bold text-white">100K saat</p>
-                        </div>
-                      </div>
 
-                      {/* Demo Features List */}
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3 p-3 bg-[#181c24] rounded-lg border border-[#232a36]">
-                          <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                          <p className="text-sm text-blue-100">AI ile iş ilanını analiz et ve özel CV oluştur</p>
+                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/5 opacity-60">
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                              <Briefcase className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                              <div className="h-4 w-40 bg-white/20 rounded mb-2" />
+                              <div className="h-3 w-20 bg-white/10 rounded" />
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-3 p-3 bg-[#181c24] rounded-lg border border-[#232a36]">
-                          <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                          <p className="text-sm text-blue-100">Profesyonel şablonlar ile ATS uyumlu CV'ler</p>
-                        </div>
-                        <div className="flex items-center gap-3 p-3 bg-[#181c24] rounded-lg border border-[#232a36]">
-                          <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                          <p className="text-sm text-blue-100">Her iş başvurusu için özelleştirilmiş içerik</p>
-                        </div>
-                      </div>
-
-                      {/* CTA */}
-                      <div className="mt-6 text-center">
-                        <Link
-                          href="/auth/register"
-                          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3b82f6] to-[#6366f1] text-white font-semibold rounded-lg hover:from-[#2563eb] hover:to-[#4f46e5] transition-all"
-                        >
-                          Hemen Başla
-                          <ArrowRight className="w-4 h-4" />
-                        </Link>
                       </div>
                     </div>
                   )}
                 </div>
               </div>
             </div>
+
+            {/* Social Proof */}
+            <div className="mt-20 pt-10 border-t border-white/5">
+              <p className="text-sm font-medium text-gray-500 mb-6 uppercase tracking-wider">Trusted by professionals from</p>
+              <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+                {/* Simple Placeholders for Logos using Text */}
+                <span className="text-xl font-bold font-serif text-white/40">Google</span>
+                <span className="text-xl font-bold font-sans text-white/40">Spotify</span>
+                <span className="text-xl font-bold font-mono text-white/40">Amazon</span>
+                <span className="text-xl font-bold text-white/40">Microsoft</span>
+                <span className="text-xl font-bold italic text-white/40">Netflix</span>
+              </div>
+            </div>
+
           </div>
         </section>
 
-        {/* Features Section */}
-        <section id="features" className="py-24 bg-[#181c24] relative">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-20">
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 mb-6">
-                Everything You Need to
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600"> Stand Out</span>
-              </h2>
-              <p className="text-xl text-gray-600">
-                Powerful AI features designed to give you the competitive edge in your job search.
-              </p>
+        {/* Features Grid */}
+        <section id="features" className="py-32 px-6 relative bg-[#0F121C]">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center max-w-2xl mx-auto mb-20">
+              <h2 className="text-3xl md:text-5xl font-bold mb-6">Power-Packed for Your Career</h2>
+              <p className="text-gray-400 text-lg">Everything you need to stand out in a crowded market, powered by state-of-the-art AI.</p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {features.map((feature, index) => (
-                <div
-                  key={index}
-                  className="group relative p-8 rounded-2xl bg-[#232a36] border border-[#232a36] hover:border-[#3b82f6] hover:shadow-2xl transition-all duration-300"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-white rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="relative">
-                    <div className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                      <feature.icon className="w-8 h-8 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
-                    <p className="text-blue-200 leading-relaxed">{feature.description}</p>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {features.map((feature, idx) => (
+                <div key={idx} className="group p-8 rounded-2xl bg-[#151925] border border-white/5 hover:border-white/10 transition-colors hover:bg-[#1a1f2e]">
+                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
+                    <feature.icon className="w-7 h-7 text-white" />
                   </div>
+                  <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
+                  <p className="text-gray-400 leading-relaxed">{feature.description}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* How It Works Section */}
-        <section id="how-it-works" className="py-24 bg-gradient-to-b from-[#232a36] to-[#181c24]">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-20">
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-6">
-                3 Kolay Adımda Başarı
-              </h2>
-              <p className="text-xl text-blue-200">
-                İşe alımda öne çıkmak için CV oluşturmak hiç bu kadar kolay olmamıştı.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-12">
-              {steps.map((step, index) => (
-                <div key={index} className="relative">
-                  {index < steps.length - 1 && (
-                    <div className="hidden md:block absolute top-12 left-full w-full h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 -z-10"
-                      style={{ width: 'calc(100% - 3rem)' }}
-                    />
-                  )}
-                  <div className="relative bg-[#232a36] rounded-2xl p-8 border-2 border-[#232a36] hover:border-[#3b82f6] transition-all duration-300 hover:shadow-xl">
-                    <div className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-[#3b82f6] to-[#6366f1] mb-4">
-                      {step.number}
+        {/* How It Works - Steps */}
+        <section id="how-it-works" className="py-32 px-6 bg-[#0B0F19]">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-16 items-center">
+              <div>
+                <h2 className="text-3xl md:text-5xl font-bold mb-8 leading-tight">
+                  Your Dream Job is <br />
+                  <span className="text-blue-500">Three Steps Away</span>
+                </h2>
+                <div className="space-y-12">
+                  {steps.map((step, idx) => (
+                    <div key={idx} className="flex gap-6 group">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-full border border-blue-500/20 text-blue-500 font-mono font-bold flex items-center justify-center text-lg group-hover:bg-blue-500 group-hover:text-white transition-colors duration-300">
+                        {step.number}
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-white mb-2">{step.title}</h3>
+                        <p className="text-gray-400">{step.description}</p>
+                      </div>
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-4">{step.title}</h3>
-                    <p className="text-blue-200 leading-relaxed">{step.description}</p>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Testimonials Section */}
-        <section className="py-24 bg-[#181c24]">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-20">
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-6">
-                Kullanıcılarımızdan Yorumlar
-              </h2>
-              <p className="text-xl text-blue-200">
-                Başarı hikayelerini ve kullanıcı deneyimlerini inceleyin.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial, index) => (
-                <div
-                  key={index}
-                  className="bg-gradient-to-br from-[#232a36] to-[#181c24] rounded-2xl p-8 border border-[#232a36] hover:shadow-xl transition-all duration-300"
-                >
-                  <div className="flex gap-1 mb-6">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <p className="text-blue-100 mb-6 leading-relaxed italic">
-                    "{testimonial.content}"
-                  </p>
-                  <div>
-                    <div className="font-bold text-white">{testimonial.name}</div>
-                    <div className="text-sm text-blue-200">
-                      {testimonial.role} at {testimonial.company}
+                <div className="mt-12">
+                  <Link href="/auth/register" className="inline-flex items-center gap-3 text-blue-400 font-semibold hover:text-blue-300 transition-colors">
+                    Start Building Now <ArrowRight className="w-5 h-5" />
+                  </Link>
+                </div>
+              </div>
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-3xl blur-3xl opacity-30" />
+                <div className="relative bg-[#151925] border border-white/10 rounded-2xl p-8 rotate-3 hover:rotate-0 transition-transform duration-500 shadow-2xl">
+                  {/* Abstract UI representation of the process */}
+                  <div className="space-y-4">
+                    <div className="h-32 bg-white/5 rounded-xl border border-white/5 p-4 flex flex-col justify-center items-center text-center">
+                      <FileText className="w-8 h-8 text-gray-500 mb-2" />
+                      <span className="text-sm text-gray-400">Analysis in progress...</span>
+                      <div className="w-full h-1 bg-gray-800 rounded-full mt-4 overflow-hidden">
+                        <div className="h-full bg-blue-500 w-2/3 animate-pulse" />
+                      </div>
+                    </div>
+                    <div className="h-16 bg-blue-500/10 border border-blue-500/30 rounded-xl flex items-center px-4 gap-4">
+                      <CheckCircle className="w-5 h-5 text-blue-500" />
+                      <span className="text-sm text-blue-200">Skills Matched</span>
+                    </div>
+                    <div className="h-16 bg-blue-500/10 border border-blue-500/30 rounded-xl flex items-center px-4 gap-4">
+                      <CheckCircle className="w-5 h-5 text-blue-500" />
+                      <span className="text-sm text-blue-200">Keywords Optimized</span>
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Pro Membership Section */}
-        <section className="py-24 bg-gradient-to-br from-[#232a36] via-[#1a1f2e] to-[#181c24] relative overflow-hidden">
-          {/* Background decorations */}
-          <div className="absolute top-0 left-0 w-full h-full opacity-30">
-            <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full filter blur-3xl"></div>
-            <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500 rounded-full filter blur-3xl"></div>
-          </div>
-
-          <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/20 border border-amber-500/30 rounded-full mb-6">
-                <Crown className="w-5 h-5 text-amber-400" />
-                <span className="text-sm font-semibold text-amber-300">Premium Özellikler</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-6">
-                Pro ile Sınırsız İmkanlar
-              </h2>
-              <p className="text-xl text-blue-200">
-                Kariyerini bir üst seviyeye taşı. Sınırsız CV oluştur, tüm özelliklere eriş.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-12">
-              {/* Free Plan - Comparison */}
-              <div className="bg-[#232a36]/60 backdrop-blur-sm rounded-2xl p-8 border-2 border-[#232a36]">
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold text-white mb-2">Free Plan</h3>
-                  <div className="flex items-baseline gap-2 mb-4">
-                    <span className="text-4xl font-bold text-white">$0</span>
-                    <span className="text-blue-200">/süresiz</span>
-                  </div>
-                </div>
-                <ul className="space-y-4">
-                  <li className="flex items-start gap-3 text-blue-200">
-                    <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>3 iş bazlı CV (toplam limit)</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-blue-200">
-                    <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>1 profil bazlı CV (toplam limit)</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-blue-200">
-                    <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>Temel şablonlar</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-blue-200">
-                    <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>ATS uyumlu format</span>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Pro Plan - Highlighted */}
-              <div className="relative bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-sm rounded-2xl p-8 border-2 border-amber-500/50 shadow-2xl shadow-amber-500/20">
-                {/* Popular badge */}
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-bold px-6 py-2 rounded-full flex items-center gap-2 shadow-lg">
-                    <Star className="w-4 h-4 fill-white" />
-                    En Popüler
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Crown className="w-6 h-6 text-amber-400" />
-                    <h3 className="text-2xl font-bold text-white">Pro Plan</h3>
-                  </div>
-                  <div className="flex items-baseline gap-2 mb-4">
-                    <span className="text-4xl font-bold text-white">$15</span>
-                    <span className="text-blue-200">/ay</span>
-                    <span className="text-sm text-blue-300 ml-2">veya $99/yıl</span>
-                  </div>
-                </div>
-
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-start gap-3 text-white">
-                    <div className="p-1 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full">
-                      <Infinity className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="font-semibold">Sınırsız CV oluşturma</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-white">
-                    <CheckCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
-                    <span>Tüm premium şablonlar</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-white">
-                    <CheckCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
-                    <span>Öncelikli AI işleme</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-white">
-                    <CheckCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
-                    <span>Gelişmiş özelleştirme</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-white">
-                    <CheckCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
-                    <span>Premium destek</span>
-                  </li>
-                </ul>
-
-                <Link
-                  href="/pricing"
-                  className="block w-full text-center px-6 py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2"
-                >
-                  <Crown className="w-5 h-5" />
-                  Pro'ya Yükselt
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-                <p className="text-center text-sm text-blue-200 mt-4">
-                  Yıllık planda %33 tasarruf edin
-                </p>
-              </div>
-            </div>
-
-            {/* Quick Benefits */}
-            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-              <div className="text-center p-6 bg-[#232a36]/40 backdrop-blur-sm rounded-xl border border-[#232a36]">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Infinity className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-2">Sınırsız Oluşturma</h3>
-                <p className="text-sm text-blue-200">İstediğin kadar CV oluştur, her iş için özelleştir</p>
-              </div>
-              <div className="text-center p-6 bg-[#232a36]/40 backdrop-blur-sm rounded-xl border border-[#232a36]">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Zap className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-2">Öncelikli İşleme</h3>
-                <p className="text-sm text-blue-200">AI işlemlerinde öncelik, daha hızlı sonuçlar</p>
-              </div>
-              <div className="text-center p-6 bg-[#232a36]/40 backdrop-blur-sm rounded-xl border border-[#232a36]">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-2">Premium Destek</h3>
-                <p className="text-sm text-blue-200">Öncelikli müşteri desteği ve yardım</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Final CTA Section */}
-        <section className="relative py-24 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6] via-[#6366f1] to-[#a21caf]" />
-          <div className="absolute inset-0 opacity-20" />
+        {/* Pricing / CTA */}
+        <section id="pricing" className="py-32 px-6 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0F121C] to-[#0B0F19]" />
 
-          <div className="relative max-w-4xl mx-auto px-6 text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              İş Arayışını Dönüştürmeye Hazır mısın?
-            </h2>
-            <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
-              Binlerce profesyonel gibi, hayalindeki işe ulaşmak için hemen AI destekli CV oluşturucumuzu kullan.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                href="/auth/register"
-                className="group w-full sm:w-auto px-10 py-5 text-lg font-bold text-[#3b82f6] bg-white rounded-full hover:bg-gray-50 transition-all shadow-2xl hover:shadow-3xl hover:scale-105 flex items-center justify-center gap-2"
+          <div className="max-w-4xl mx-auto relative z-10 text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-8">Simple Pricing, Unlimited Potential</h2>
+
+            {/* Billing Toggle */}
+            <div className="flex items-center justify-center gap-4 mb-12">
+              <span className={`text-sm font-medium ${billingCycle === 'monthly' ? 'text-white' : 'text-gray-400'}`}>Monthly</span>
+              <button
+                onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
+                className="relative w-14 h-7 bg-white/10 rounded-full transition-colors hover:bg-white/20 focus:outline-none"
               >
-                Hemen Başla - Ücretsiz
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
+                <div className={`absolute top-1 left-1 w-5 h-5 bg-blue-500 rounded-full transition-transform ${billingCycle === 'yearly' ? 'translate-x-7' : ''}`} />
+              </button>
+              <span className={`text-sm font-medium ${billingCycle === 'yearly' ? 'text-white' : 'text-gray-400'}`}>
+                Yearly <span className="text-green-400 text-xs ml-1">(Save 45%)</span>
+              </span>
             </div>
-            <p className="mt-6 text-blue-100 text-sm">
-              Kredi kartı gerekmez • Sınırsız CV oluştur • İstediğin zaman iptal et
-            </p>
+
+            <div className="bg-gradient-to-br from-[#1a1f2e] to-[#151925] border border-white/10 rounded-3xl p-10 md:p-14 shadow-2xl max-w-lg mx-auto transform hover:scale-105 transition-transform duration-500 relative">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-amber-500 text-black font-bold px-4 py-1 rounded-full text-sm shadow-lg shadow-amber-500/20">
+                MOST POPULAR
+              </div>
+
+              <div className="flex justify-center items-baseline gap-1 mb-2">
+                <span className="text-5xl font-bold text-white">
+                  {billingCycle === 'monthly' ? '$15' : '$99'}
+                </span>
+                <span className="text-gray-400">
+                  {billingCycle === 'monthly' ? '/mo' : '/yr'}
+                </span>
+              </div>
+
+              {billingCycle === 'yearly' && (
+                <p className="text-green-400 text-sm font-medium mb-6">
+                  Billed annually (equals $8.25/mo)
+                </p>
+              )}
+
+              <p className="text-gray-400 mb-8 mt-2">Unlock unlimited CV generations, premium templates, and priority AI access.</p>
+
+              <ul className="space-y-4 mb-10 text-left">
+                {[
+                  'Unlimited Job-Specific CVs',
+                  'Access to All Premium Templates',
+                  'Advanced AI Keyword Optimization',
+                  'Priority Processing',
+                  'PDF & DOCX Export'
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3">
+                    <CheckCircle className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                    <span className="text-gray-300">{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <Link href="/pricing" className="block w-full py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-100 transition-colors shadow-lg shadow-white/10">
+                Get Started
+              </Link>
+              <p className="mt-4 text-xs text-gray-500">Free plan available. Cancel anytime.</p>
+            </div>
           </div>
         </section>
+
       </main>
 
-      {/* Footer */}
-      <footer className="bg-[#10131a] text-blue-200 py-16">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-12 mb-12">
-            <div className="md:col-span-2">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="relative w-10 h-10 overflow-hidden rounded-lg bg-white shadow-sm">
-                  <Image
-                    src="/logo.png"
-                    alt={APP_NAME}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <span className="text-xl font-bold text-white">{APP_NAME}</span>
+      <footer className="border-t border-white/5 bg-[#05080f] pt-20 pb-10 px-6">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-12 mb-16">
+          <div className="col-span-1 md:col-span-2">
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <p className="text-blue-200 leading-relaxed max-w-md">
-                Yapay zeka destekli araçlarla, profesyonel ve ATS uyumlu CV'ler oluşturmanı sağlıyoruz.
-              </p>
+              <span className="font-bold text-xl">ResuMatch AI</span>
             </div>
-
-            <div>
-              <h3 className="text-white font-semibold mb-4">Ürün</h3>
-              <ul className="space-y-3">
-                <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Templates</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-white font-semibold mb-4">Şirket</h3>
-              <ul className="space-y-3">
-                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-blue-200">
-              © {new Date().getFullYear()} {APP_NAME}. Tüm hakları saklıdır.
+            <p className="text-gray-400 max-w-sm">
+              Empowering professionals to land their dream jobs through intelligent, automated personal branding tools.
             </p>
-            <div className="flex items-center gap-6">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <span className="sr-only">Twitter</span>
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg>
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <span className="sr-only">LinkedIn</span>
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" /></svg>
-              </a>
-            </div>
+          </div>
+          <div>
+            <h4 className="font-bold text-white mb-6">Product</h4>
+            <ul className="space-y-4 text-sm text-gray-400">
+              <li><a href="#" className="hover:text-blue-400">Features</a></li>
+              <li><a href="#" className="hover:text-blue-400">Pricing</a></li>
+              <li><a href="#" className="hover:text-blue-400">Templates</a></li>
+              <li><a href="#" className="hover:text-blue-400">Examples</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-bold text-white mb-6">Company</h4>
+            <ul className="space-y-4 text-sm text-gray-400">
+              <li><a href="#" className="hover:text-blue-400">About</a></li>
+              <li><a href="#" className="hover:text-blue-400">Blog</a></li>
+              <li><a href="#" className="hover:text-blue-400">Careers</a></li>
+              <li><a href="#" className="hover:text-blue-400">Contact</a></li>
+            </ul>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-gray-500 text-sm">© 2026 ResuMatch AI. All rights reserved.</p>
+          <div className="flex gap-6">
+            <a href="#" className="text-gray-500 hover:text-white"><span className="sr-only">Twitter</span><svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg></a>
+            <a href="#" className="text-gray-500 hover:text-white"><span className="sr-only">GitHub</span><svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" /></svg></a>
           </div>
         </div>
       </footer>

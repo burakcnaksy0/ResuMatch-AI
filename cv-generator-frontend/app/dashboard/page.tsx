@@ -42,12 +42,12 @@ export default function DashboardPage() {
     });
 
     const [recentCVs, setRecentCVs] = useState<any[]>([
-        // Mock data - bu gerçek API'den gelecek
+        // Mock data - will come from real API
         {
             id: 1,
             jobTitle: 'Senior Frontend Developer',
             company: 'TechCorp Inc.',
-            createdAt: '2 saat önce',
+            createdAt: '2 hours ago',
             status: 'active',
             views: 12
         },
@@ -55,7 +55,7 @@ export default function DashboardPage() {
             id: 2,
             jobTitle: 'Full Stack Engineer',
             company: 'StartupXYZ',
-            createdAt: '1 gün önce',
+            createdAt: '1 day ago',
             status: 'downloaded',
             views: 5
         },
@@ -63,7 +63,7 @@ export default function DashboardPage() {
             id: 3,
             jobTitle: 'React Developer',
             company: 'Digital Agency',
-            createdAt: '3 gün önce',
+            createdAt: '3 days ago',
             status: 'active',
             views: 8
         },
@@ -157,10 +157,10 @@ export default function DashboardPage() {
                     <div className="flex items-center justify-between flex-wrap gap-4 mb-4">
                         <div>
                             <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                                Tekrar hoş geldin! 👋
+                                Welcome back! 👋
                             </h1>
                             <p className="text-lg text-blue-200">
-                                Bir sonraki iş kazandıran CV'ni oluşturmaya hazır mısın?
+                                Ready to create your next job-winning CV?
                             </p>
                         </div>
                         <Link
@@ -168,7 +168,7 @@ export default function DashboardPage() {
                             className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3b82f6] to-[#6366f1] text-white font-semibold rounded-xl hover:from-[#2563eb] hover:to-[#4f46e5] transition-all duration-200 shadow-lg shadow-blue-900 hover:shadow-xl hover:shadow-blue-800"
                         >
                             <Plus className="w-5 h-5" />
-                            <span>Yeni CV Oluştur</span>
+                            <span>Create New CV</span>
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </Link>
                     </div>
@@ -181,7 +181,7 @@ export default function DashboardPage() {
                                 </div>
                                 <div className="ml-3">
                                     <p className="text-sm text-yellow-200">
-                                        E-posta adresin doğrulanmadı. Bazı özellikler kısıtlanmış olabilir. Lütfen <Link href="/auth/verify-email" className="font-medium underline hover:text-yellow-300">e-postanı doğrula</Link>.
+                                        Your email address is not verified. Some features may be restricted. Please <Link href="/auth/verify-email" className="font-medium underline hover:text-yellow-300">verify your email</Link>.
                                     </p>
                                 </div>
                             </div>
@@ -217,7 +217,7 @@ export default function DashboardPage() {
 
                 {/* Quick Actions */}
                 <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-white mb-6">Hızlı İşlemler</h2>
+                    <h2 className="text-2xl font-bold text-white mb-6">Quick Actions</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {quickActions.map((action, index) => (
                             <Link
@@ -243,7 +243,7 @@ export default function DashboardPage() {
                                         )}
                                         {action.featured && (
                                             <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#6366f1] text-white">
-                                                ⚡ Popüler
+                                                ⚡ Popular
                                             </span>
                                         )}
                                     </div>
@@ -281,11 +281,11 @@ export default function DashboardPage() {
                                 <div className="p-2 bg-[#181c24] rounded-lg">
                                     <FileText className="w-5 h-5 text-[#3b82f6]" />
                                 </div>
-                                <h2 className="text-2xl font-bold text-white">Son CV'lerim</h2>
+                                <h2 className="text-2xl font-bold text-white">My Recent CVs</h2>
                             </div>
                             {recentCVs.length > 0 && (
                                 <Link href="/cvs" className="text-sm text-[#3b82f6] hover:text-[#2563eb] font-medium flex items-center gap-1">
-                                    Tümünü Gör
+                                    View All
                                     <ArrowRight className="w-4 h-4" />
                                 </Link>
                             )}
@@ -309,7 +309,7 @@ export default function DashboardPage() {
                                                 <span className="text-blue-300">•</span>
                                                 <span className="flex items-center gap-1">
                                                     <Eye className="w-3.5 h-3.5" />
-                                                    {cv.views} görüntülenme
+                                                    {cv.views} views
                                                 </span>
                                             </div>
                                         </div>
@@ -322,10 +322,10 @@ export default function DashboardPage() {
                                                 {cv.status === 'downloaded' ? (
                                                     <span className="flex items-center gap-1">
                                                         <Download className="w-3 h-3" />
-                                                        İndirildi
+                                                        Downloaded
                                                     </span>
                                                 ) : (
-                                                    'Aktif'
+                                                    'Active'
                                                 )}
                                             </span>
                                             <span className="text-xs text-blue-300">{cv.createdAt}</span>
@@ -340,24 +340,24 @@ export default function DashboardPage() {
                                     <FileText className="w-10 h-10 text-white" />
                                 </div>
                                 <h3 className="text-lg font-semibold text-white mb-2">
-                                    Henüz CV oluşturmadın
+                                    You haven't created any CVs yet
                                 </h3>
                                 <p className="text-blue-200 mb-6">
-                                    İlk CV'ni oluşturarak başla ve hayalindeki işe bir adım daha yaklaş
+                                    Start by creating your first CV and get one step closer to your dream job
                                 </p>
                                 <div className="flex items-center justify-center gap-3">
                                     <Link
                                         href="/profile"
                                         className="px-4 py-2 text-sm font-medium text-[#3b82f6] bg-[#181c24] rounded-lg hover:bg-[#232a36] transition-colors"
                                     >
-                                        Profili Düzenle
+                                        Edit Profile
                                     </Link>
                                     <Link
                                         href="/jobs"
                                         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#3b82f6] to-[#6366f1] rounded-lg hover:from-[#2563eb] hover:to-[#4f46e5] transition-all"
                                     >
                                         <Sparkles className="w-4 h-4" />
-                                        CV Oluştur
+                                        Create CV
                                     </Link>
                                 </div>
                             </div>
@@ -377,7 +377,7 @@ export default function DashboardPage() {
                                     {subscription.subscriptionType === 'PRO' && subscription.isActive ? (
                                         <>
                                             <Crown className="w-5 h-5 text-white" />
-                                            <h3 className="font-bold text-lg text-white">Pro Üye</h3>
+                                            <h3 className="font-bold text-lg text-white">Pro Member</h3>
                                         </>
                                     ) : (
                                         <>
@@ -390,11 +390,11 @@ export default function DashboardPage() {
                                 {subscription.subscriptionType === 'PRO' && subscription.isActive ? (
                                     <div>
                                         <p className="text-white/90 text-sm mb-4">
-                                            Sınırsız CV oluşturma hakkına sahipsin!
+                                            You have unlimited CV generation!
                                         </p>
                                         {subscription.subscriptionEndDate && (
                                             <p className="text-xs text-white/70">
-                                                Bitiş: {new Date(subscription.subscriptionEndDate).toLocaleDateString('tr-TR')}
+                                                Expires: {new Date(subscription.subscriptionEndDate).toLocaleDateString('en-US')}
                                             </p>
                                         )}
                                     </div>
@@ -403,9 +403,9 @@ export default function DashboardPage() {
                                         <div className="space-y-3 mb-4">
                                             <div className="bg-[#181c24] rounded-lg p-3">
                                                 <div className="flex items-center justify-between mb-1">
-                                                    <span className="text-sm text-blue-200">İş bazlı CV</span>
+                                                    <span className="text-sm text-blue-200">Job-based CV</span>
                                                     <span className="text-sm font-semibold text-white">
-                                                        {subscription.usage.jobBasedCVs.remaining} / {subscription.usage.jobBasedCVs.limit} kaldı
+                                                        {subscription.usage.jobBasedCVs.remaining} / {subscription.usage.jobBasedCVs.limit} remaining
                                                     </span>
                                                 </div>
                                                 <div className="w-full bg-[#232a36] rounded-full h-2">
@@ -423,9 +423,9 @@ export default function DashboardPage() {
                                             </div>
                                             <div className="bg-[#181c24] rounded-lg p-3">
                                                 <div className="flex items-center justify-between mb-1">
-                                                    <span className="text-sm text-blue-200">Profil bazlı CV</span>
+                                                    <span className="text-sm text-blue-200">Profile-based CV</span>
                                                     <span className="text-sm font-semibold text-white">
-                                                        {subscription.usage.profileBasedCVs.remaining} / {subscription.usage.profileBasedCVs.limit} kaldı
+                                                        {subscription.usage.profileBasedCVs.remaining} / {subscription.usage.profileBasedCVs.limit} remaining
                                                     </span>
                                                 </div>
                                                 <div className="w-full bg-[#232a36] rounded-full h-2">
@@ -448,7 +448,7 @@ export default function DashboardPage() {
                                         >
                                             <div className="flex items-center justify-center gap-2">
                                                 <Crown className="w-4 h-4" />
-                                                Pro'ya Yükselt
+                                                Upgrade to Pro
                                             </div>
                                         </Link>
                                     </div>
@@ -463,13 +463,13 @@ export default function DashboardPage() {
                                 <h3 className="font-bold text-lg">Pro Tip</h3>
                             </div>
                             <p className="text-blue-100 text-sm leading-relaxed mb-4">
-                                Profilini %100 tamamla, en iyi AI destekli CV'leri elde et. Ne kadar çok bilgi verirsen, sonuçlar o kadar iyi olur!
+                                Complete your profile 100% to get the best AI-powered CVs. The more information you provide, the better the results!
                             </p>
                             <Link
                                 href="/profile"
                                 className="inline-flex items-center gap-2 text-sm font-semibold text-white hover:text-blue-100 transition-colors"
                             >
-                                Profili Tamamla
+                                Complete Profile
                                 <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
@@ -478,19 +478,19 @@ export default function DashboardPage() {
                         <div className="bg-[#232a36] rounded-2xl border border-[#232a36] p-6">
                             <div className="flex items-center gap-2 mb-4">
                                 <Award className="w-5 h-5 text-yellow-400" />
-                                <h3 className="font-bold text-lg text-white">Kaynaklar</h3>
+                                <h3 className="font-bold text-lg text-white">Resources</h3>
                             </div>
                             <div className="space-y-3">
                                 <a href="#" className="flex items-center justify-between p-3 bg-[#181c24] rounded-lg hover:bg-[#232a36] transition-colors group">
-                                    <span className="text-sm font-medium text-blue-200">CV Hazırlama Rehberi</span>
+                                    <span className="text-sm font-medium text-blue-200">CV Preparation Guide</span>
                                     <ArrowRight className="w-4 h-4 text-blue-200 group-hover:text-white" />
                                 </a>
                                 <a href="#" className="flex items-center justify-between p-3 bg-[#181c24] rounded-lg hover:bg-[#232a36] transition-colors group">
-                                    <span className="text-sm font-medium text-blue-200">Mülakat Tüyoları</span>
+                                    <span className="text-sm font-medium text-blue-200">Interview Tips</span>
                                     <ArrowRight className="w-4 h-4 text-blue-200 group-hover:text-white" />
                                 </a>
                                 <a href="#" className="flex items-center justify-between p-3 bg-[#181c24] rounded-lg hover:bg-[#232a36] transition-colors group">
-                                    <span className="text-sm font-medium text-blue-200">ATS Optimizasyonu</span>
+                                    <span className="text-sm font-medium text-blue-200">ATS Optimization</span>
                                     <ArrowRight className="w-4 h-4 text-blue-200 group-hover:text-white" />
                                 </a>
                             </div>

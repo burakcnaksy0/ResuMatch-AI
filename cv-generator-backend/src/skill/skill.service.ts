@@ -5,47 +5,47 @@ import { UpdateSkillDto } from './dto/update-skill.dto';
 
 @Injectable()
 export class SkillService {
-    constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
-    async create(createSkillDto: CreateSkillDto) {
-        return this.prisma.skill.create({
-            data: createSkillDto,
-        });
+  async create(createSkillDto: CreateSkillDto) {
+    return this.prisma.skill.create({
+      data: createSkillDto,
+    });
+  }
+
+  async findAllByProfile(profileId: string) {
+    return this.prisma.skill.findMany({
+      where: { profileId },
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  async findOne(id: string) {
+    const skill = await this.prisma.skill.findUnique({
+      where: { id },
+    });
+
+    if (!skill) {
+      throw new NotFoundException(`Skill with ID ${id} not found`);
     }
 
-    async findAllByProfile(profileId: string) {
-        return this.prisma.skill.findMany({
-            where: { profileId },
-            orderBy: { name: 'asc' },
-        });
-    }
+    return skill;
+  }
 
-    async findOne(id: string) {
-        const skill = await this.prisma.skill.findUnique({
-            where: { id },
-        });
+  async update(id: string, updateSkillDto: UpdateSkillDto) {
+    await this.findOne(id);
 
-        if (!skill) {
-            throw new NotFoundException(`Skill with ID ${id} not found`);
-        }
+    return this.prisma.skill.update({
+      where: { id },
+      data: updateSkillDto,
+    });
+  }
 
-        return skill;
-    }
+  async remove(id: string) {
+    await this.findOne(id);
 
-    async update(id: string, updateSkillDto: UpdateSkillDto) {
-        await this.findOne(id);
-
-        return this.prisma.skill.update({
-            where: { id },
-            data: updateSkillDto,
-        });
-    }
-
-    async remove(id: string) {
-        await this.findOne(id);
-
-        return this.prisma.skill.delete({
-            where: { id },
-        });
-    }
+    return this.prisma.skill.delete({
+      where: { id },
+    });
+  }
 }

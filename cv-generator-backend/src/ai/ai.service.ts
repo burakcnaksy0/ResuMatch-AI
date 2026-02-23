@@ -73,7 +73,9 @@ export class AiService {
     private prisma: PrismaService,
   ) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
-    const baseURL = this.configService.get<string>('OPENAI_BASE_URL') || 'https://api.openai.com/v1';
+    const baseURL =
+      this.configService.get<string>('OPENAI_BASE_URL') ||
+      'https://api.openai.com/v1';
 
     if (!apiKey) {
       throw new Error('OPENAI_API_KEY is not configured');
@@ -120,15 +122,19 @@ export class AiService {
     }
 
     // Generate CV using OpenAI/OpenRouter
-    const prompt = this.buildPrompt(profile, jobPosting, input.tone, input.language);
-    // Use gpt-4o-mini which is much more affordable but still very capable for this task
-    // The previous error indicated insufficient credits for gpt-4o with high token limit
-    const model = 'gpt-4o-mini';
+    const prompt = this.buildPrompt(
+      profile,
+      jobPosting,
+      input.tone,
+      input.language,
+    );
+    // Use configured model or default to gpt-4o-mini via OpenRouter/OpenAI
+    const model = this.configService.get<string>('OPENAI_MODEL') || 'openai/gpt-4o-mini';
 
     try {
       const completion = await this.openai.chat.completions.create({
         model,
-        max_tokens: 4000,
+        max_tokens: 1500, // Reduced from 2000 to fit within current credit limits (user has 1781)
         messages: [
           {
             role: 'system',
@@ -139,7 +145,7 @@ export class AiService {
             content: prompt,
           },
         ],
-        response_format: { type: "json_object" }, // Ensure JSON output
+        response_format: { type: 'json_object' }, // Ensure JSON output
       });
 
       const responseText = completion.choices[0].message.content;
@@ -158,8 +164,14 @@ export class AiService {
     }
   }
 
-  private buildPrompt(profile: any, jobPosting: any | null, tone: string = 'Professional', language: string = 'English'): string {
-    const jobContext = jobPosting ? `
+  private buildPrompt(
+    profile: any,
+    jobPosting: any | null,
+    tone: string = 'Professional',
+    language: string = 'English',
+  ): string {
+    const jobContext = jobPosting
+      ? `
 **Job Posting:**
 - Title: ${jobPosting.jobTitle}
 - Company: ${jobPosting.company || 'Not specified'}
@@ -167,16 +179,19 @@ export class AiService {
 - Required Skills: ${((jobPosting.requiredSkills as string[]) || []).join(', ') || 'Not specified'}
 - Keywords: ${((jobPosting.keywords as string[]) || []).join(', ')}
 - Description: ${jobPosting.jobDescription}
-` : `
+`
+      : `
 **Context:**
 This is a general purpose CV based on the candidate's profile. Highlight their strongest skills and experiences to create a comprehensive professional profile.
 `;
 
-    const specificInstructions = jobPosting ? `
+    const specificInstructions = jobPosting
+      ? `
 1. **Professional Summary:** Write a unique, 3-5 sentence summary. It MUST be tailored to the job posting using the candidate's actual experience. Use the requested '${tone}' tone. If '${tone}' is 'Technical', focus heavily on stack and tools. If 'Leadership', focus on management and impact.
 2. **Experience & Projects:** Optimize descriptions to match the job requirements. Use action verbs.
 3. **Skills:** Highlight skills that match the job's required skills and keywords.
-` : `
+`
+      : `
 1. **Professional Summary:** Write a strong, 3-5 sentence professional summary that highlights the candidate's overall expertise, years of experience, and key achievements. Use a '${tone}' tone.
 2. **Experience & Projects:** Refine the descriptions to be professional, impact-oriented, and concise. Use strong action verbs.
 3. **Skills:** Organize skills logically. Group them if possible (though pure JSON array is requested, use category field effectively).
@@ -199,32 +214,44 @@ ${jobContext}
 - Current Summary: ${profile.professionalSummary || 'Not provided'}
 
 **Work Experience:**
-${profile.workExperience.map((exp: any) => `
+${profile.workExperience
+        .map(
+          (exp: any) => `
 - ${exp.position} at ${exp.company} (${exp.startDate} - ${exp.endDate || 'Present'})
   Location: ${exp.location || 'Not specified'}
   Description: ${exp.description || 'Not provided'}
   Achievements: ${JSON.stringify(exp.achievements) || 'None'}
-`).join('\n')}
+`,
+        )
+        .join('\n')}
 
 **Education:**
-${profile.education.map((edu: any) => `
+${profile.education
+        .map(
+          (edu: any) => `
 - ${edu.degree} in ${edu.fieldOfStudy || 'Not specified'} from ${edu.institution}
   ${edu.startDate} - ${edu.endDate || 'Present'}
   GPA: ${edu.gpa || 'Not provided'}
   Description: ${edu.description || 'Not provided'}
-`).join('\n')}
+`,
+        )
+        .join('\n')}
 
 **Skills:**
 ${profile.skills.map((skill: any) => `- ${skill.name} (${skill.category || 'General'}, ${skill.proficiencyLevel || 'Not specified'})`).join('\n')}
 
 **Projects:**
-${profile.projects.map((proj: any) => `
+${profile.projects
+        .map(
+          (proj: any) => `
 - ${proj.name}
   Description: ${proj.description || 'Not provided'}
   Technologies: ${JSON.stringify(proj.technologies) || 'None'}
   URL: ${proj.url || 'Not provided'}
   GitHub: ${proj.githubUrl || 'Not provided'}
-`).join('\n')}
+`,
+        )
+        .join('\n')}
 
 **Certifications:**
 ${profile.certifications.map((cert: any) => `- ${cert.name} by ${cert.issuer} (${cert.issueDate})`).join('\n')}
@@ -310,16 +337,21 @@ Return ONLY a valid JSON object with this exact structure:
   }
 
   async analyzeJob(jobDescription: string, profile?: any): Promise<any> {
-    this.logger.log('Analyzing job description for: ' + (profile ? profile.fullName : 'Generic'));
+    this.logger.log(
+      'Analyzing job description for: ' +
+      (profile ? profile.fullName : 'Generic'),
+    );
 
-    const matchingInstructions = profile ? `
+    const matchingInstructions = profile
+      ? `
       5. "matchAnalysis": Analyze how well the candidate fits this role.
          - "matchPercentage": estimated 0-100 score based on skills overlapping.
          - "matchingSkills": list of skills from candidate that are relevant.
          - "missingSkills": critical skills from job description that candidate lacks.
          - "strengths": specific strong points in candidate profile for this job.
          - "gaps": specific weaknesses or missing experience.
-      ` : '';
+      `
+      : '';
 
     const outputSchema = `{
           "technicalSkills": ["string"],
@@ -327,13 +359,16 @@ Return ONLY a valid JSON object with this exact structure:
           "experienceLevel": "string",
           "keywords": ["string"],
           "roleExpectations": ["string"],
-          ${profile ? `"matchAnalysis": {
+          ${profile
+        ? `"matchAnalysis": {
               "matchPercentage": number,
               "matchingSkills": ["string"],
               "missingSkills": ["string"],
               "strengths": ["string"],
               "gaps": ["string"]
-          }` : '"matchAnalysis": null'}
+          }`
+        : '"matchAnalysis": null'
+      }
       }`;
 
     const prompt = `
@@ -343,11 +378,14 @@ Return ONLY a valid JSON object with this exact structure:
       JOB DESCRIPTION:
       ${jobDescription}
 
-      ${profile ? `CANDIDATE PROFILE:
+      ${profile
+        ? `CANDIDATE PROFILE:
       Skills: ${profile.skills?.map((s: any) => s.name).join(', ') || 'None'}
       Experience: ${profile.workExperience?.map((e: any) => e.position + ' at ' + e.company).join(', ') || 'None'}
       Summary: ${profile.professionalSummary || 'None'}
-      ` : ''}
+      `
+        : ''
+      }
 
       INSTRUCTIONS:
       1. Extract technical skills (hard skills).
@@ -363,16 +401,21 @@ Return ONLY a valid JSON object with this exact structure:
       `;
 
     try {
-      const model = this.configService.get<string>('OPENAI_MODEL') || 'openai/gpt-4o-mini';
+      const model =
+        this.configService.get<string>('OPENAI_MODEL') || 'openai/gpt-4o-mini';
       const completion = await this.openai.chat.completions.create({
         model,
         max_tokens: 1200,
         messages: [
-          { role: 'system', content: 'You are an expert HR analyst and technical recruiter. Output valid JSON only.' },
-          { role: 'user', content: prompt }
+          {
+            role: 'system',
+            content:
+              'You are an expert HR analyst and technical recruiter. Output valid JSON only.',
+          },
+          { role: 'user', content: prompt },
         ],
         temperature: 0.3,
-        response_format: { type: 'json_object' }
+        response_format: { type: 'json_object' },
       });
 
       const content = completion.choices[0].message.content;
@@ -385,7 +428,7 @@ Return ONLY a valid JSON object with this exact structure:
         experienceLevel: 'Not specified',
         keywords: [],
         roleExpectations: [],
-        matchAnalysis: null
+        matchAnalysis: null,
       };
     }
   }

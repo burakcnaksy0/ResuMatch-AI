@@ -4,21 +4,23 @@ import { APP_NAME, EMAIL_FROM, LANDING_URL } from '../common/constants';
 
 @Injectable()
 export class MailService {
-    private resend: Resend;
-    private readonly logger = new Logger(MailService.name);
+  private resend: Resend;
+  private readonly logger = new Logger(MailService.name);
 
-    constructor() {
-        // Use environment variable first, then fallback to user's new key
-        this.resend = new Resend(process.env.RESEND_API_KEY || 're_YiVzHqWX_HUCDvtP43HkiAx6ELe1EhpB6');
-    }
+  constructor() {
+    // Use environment variable first, then fallback to user's new key
+    this.resend = new Resend(
+      process.env.RESEND_API_KEY || 're_YiVzHqWX_HUCDvtP43HkiAx6ELe1EhpB6',
+    );
+  }
 
-    async sendWelcomeEmail(to: string, name: string) {
-        try {
-            const { data, error } = await this.resend.emails.send({
-                from: EMAIL_FROM,
-                to: [to],
-                subject: `Welcome to ${APP_NAME}`,
-                html: `
+  async sendWelcomeEmail(to: string, name: string) {
+    try {
+      const { data, error } = await this.resend.emails.send({
+        from: EMAIL_FROM,
+        to: [to],
+        subject: `Welcome to ${APP_NAME}`,
+        html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
             <div style="text-align: center; margin-bottom: 30px;">
                 <h1 style="color: #2563EB; margin: 0;">${APP_NAME}</h1>
@@ -36,27 +38,27 @@ export class MailService {
             <p style="color: #999; font-size: 12px; margin-top: 30px; text-align: center;">&copy; ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.</p>
           </div>
         `,
-            });
+      });
 
-            if (error) {
-                this.logger.error('Resend API Error (Welcome):', error);
-            } else {
-                this.logger.log(`Welcome email sent to ${to}`);
-            }
-        } catch (error) {
-            this.logger.error('Failed to send welcome email', error);
-        }
+      if (error) {
+        this.logger.error('Resend API Error (Welcome):', error);
+      } else {
+        this.logger.log(`Welcome email sent to ${to}`);
+      }
+    } catch (error) {
+      this.logger.error('Failed to send welcome email', error);
     }
+  }
 
-    async sendPasswordResetEmail(to: string, token: string) {
-        try {
-            const resetLink = `${LANDING_URL}/auth/reset-password?token=${token}`;
+  async sendPasswordResetEmail(to: string, token: string) {
+    try {
+      const resetLink = `${LANDING_URL}/auth/reset-password?token=${token}`;
 
-            const { data, error } = await this.resend.emails.send({
-                from: EMAIL_FROM,
-                to: [to],
-                subject: `${APP_NAME} Password Reset Request`,
-                html: `
+      const { data, error } = await this.resend.emails.send({
+        from: EMAIL_FROM,
+        to: [to],
+        subject: `${APP_NAME} Password Reset Request`,
+        html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
             <div style="text-align: center; margin-bottom: 20px;">
                 <h2 style="color: #2563EB;">${APP_NAME}</h2>
@@ -72,29 +74,31 @@ export class MailService {
             <p style="color: #999; font-size: 12px; margin-top: 30px; text-align: center;">&copy; ${new Date().getFullYear()} ${APP_NAME}</p>
           </div>
         `,
-            });
+      });
 
-            if (error) {
-                this.logger.error('Resend API Error:', error);
-                throw new Error('Failed to send email');
-            }
+      if (error) {
+        this.logger.error('Resend API Error:', error);
+        throw new Error('Failed to send email');
+      }
 
-            this.logger.log(`Password reset email sent to ${to}`);
-            return data;
-        } catch (error) {
-            this.logger.error('Failed to send password reset email', error);
-            this.logger.debug(`For testing purposes (email failed): Reset Token is ${token}`);
-            throw error;
-        }
+      this.logger.log(`Password reset email sent to ${to}`);
+      return data;
+    } catch (error) {
+      this.logger.error('Failed to send password reset email', error);
+      this.logger.debug(
+        `For testing purposes (email failed): Reset Token is ${token}`,
+      );
+      throw error;
     }
+  }
 
-    async sendVerificationEmail(to: string, code: string) {
-        try {
-            const { data, error } = await this.resend.emails.send({
-                from: EMAIL_FROM,
-                to: [to],
-                subject: `${APP_NAME} - Email Verification Code`,
-                html: `
+  async sendVerificationEmail(to: string, code: string) {
+    try {
+      const { data, error } = await this.resend.emails.send({
+        from: EMAIL_FROM,
+        to: [to],
+        subject: `${APP_NAME} - Email Verification Code`,
+        html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
             <div style="text-align: center; margin-bottom: 20px;">
                 <h2 style="color: #2563EB;">${APP_NAME}</h2>
@@ -113,30 +117,32 @@ export class MailService {
             <p style="color: #999; font-size: 12px; margin-top: 30px; text-align: center;">&copy; ${new Date().getFullYear()} ${APP_NAME}</p>
           </div>
         `,
-            });
+      });
 
-            if (error) {
-                this.logger.error('Resend API Error (Verification):', error);
-                throw new Error('Failed to send verification email');
-            }
+      if (error) {
+        this.logger.error('Resend API Error (Verification):', error);
+        throw new Error('Failed to send verification email');
+      }
 
-            this.logger.log(`Verification email sent to ${to}`);
-            return data;
-        } catch (error) {
-            this.logger.error('Failed to send verification email', error);
-            // In dev, log the code - VERY IMPORTANT for dev/test without verified domain
-            this.logger.debug(`For testing purposes (email failed): Verification Code is ${code}`);
-            throw error; // Re-throw so caller knows it failed
-        }
+      this.logger.log(`Verification email sent to ${to}`);
+      return data;
+    } catch (error) {
+      this.logger.error('Failed to send verification email', error);
+      // In dev, log the code - VERY IMPORTANT for dev/test without verified domain
+      this.logger.debug(
+        `For testing purposes (email failed): Verification Code is ${code}`,
+      );
+      throw error; // Re-throw so caller knows it failed
     }
+  }
 
-    async sendPasswordChangeNotification(to: string) {
-        try {
-            await this.resend.emails.send({
-                from: EMAIL_FROM,
-                to: [to],
-                subject: `${APP_NAME} Security Alert - Password Changed`,
-                html: `
+  async sendPasswordChangeNotification(to: string) {
+    try {
+      await this.resend.emails.send({
+        from: EMAIL_FROM,
+        to: [to],
+        subject: `${APP_NAME} Security Alert - Password Changed`,
+        html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
             <div style="text-align: center; margin-bottom: 20px;">
                 <h2 style="color: #2563EB;">${APP_NAME}</h2>
@@ -151,10 +157,10 @@ export class MailService {
             <p style="color: #999; font-size: 12px; margin-top: 30px; text-align: center;">&copy; ${new Date().getFullYear()} ${APP_NAME}</p>
           </div>
         `,
-            });
-            this.logger.log(`Password change notification sent to ${to}`);
-        } catch (error) {
-            this.logger.error('Failed to send password change notification', error);
-        }
+      });
+      this.logger.log(`Password change notification sent to ${to}`);
+    } catch (error) {
+      this.logger.error('Failed to send password change notification', error);
     }
+  }
 }

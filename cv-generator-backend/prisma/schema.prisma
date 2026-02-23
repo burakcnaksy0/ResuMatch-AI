@@ -38,6 +38,7 @@ model User {
   profile      Profile?
   jobPostings  JobPosting[]
   generatedCVs GeneratedCV[]
+  feedbacks    Feedback[]
 
   @@map("users")
 }
@@ -203,5 +204,16 @@ model GeneratedCV {
   cvType               String   @default("JOB_BASED") @map("cv_type") // JOB_BASED or PROFILE_BASED
 
   @@map("generated_cvs")
+}
+
+model Feedback {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  description String   @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("feedbacks")
 }
 

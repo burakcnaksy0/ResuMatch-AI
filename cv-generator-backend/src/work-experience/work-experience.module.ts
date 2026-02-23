@@ -3,8 +3,8 @@ import { WorkExperienceService } from './work-experience.service';
 import { WorkExperienceController } from './work-experience.controller';
 
 @Module({
-    controllers: [WorkExperienceController],
-    providers: [WorkExperienceService],
-    exports: [WorkExperienceService],
+  controllers: [WorkExperienceController],
+  providers: [WorkExperienceService],
+  exports: [WorkExperienceService],
 })
-export class WorkExperienceModule { }
+export class WorkExperienceModule {}

@@ -3,8 +3,8 @@ import { AiService } from './ai.service';
 import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-    imports: [PrismaModule],
-    providers: [AiService],
-    exports: [AiService],
+  imports: [PrismaModule],
+  providers: [AiService],
+  exports: [AiService],
 })
-export class AiModule { }
+export class AiModule {}

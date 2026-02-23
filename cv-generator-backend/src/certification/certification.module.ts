@@ -3,8 +3,8 @@ import { CertificationService } from './certification.service';
 import { CertificationController } from './certification.controller';
 
 @Module({
-    controllers: [CertificationController],
-    providers: [CertificationService],
-    exports: [CertificationService],
+  controllers: [CertificationController],
+  providers: [CertificationService],
+  exports: [CertificationService],
 })
-export class CertificationModule { }
+export class CertificationModule {}

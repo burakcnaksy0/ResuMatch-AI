@@ -7,9 +7,9 @@ import { PdfModule } from '../pdf/pdf.module';
 import { SubscriptionModule } from '../subscription/subscription.module';
 
 @Module({
-    imports: [PrismaModule, AiModule, PdfModule, SubscriptionModule],
-    controllers: [GeneratedCvController],
-    providers: [GeneratedCvService],
-    exports: [GeneratedCvService],
+  imports: [PrismaModule, AiModule, PdfModule, SubscriptionModule],
+  controllers: [GeneratedCvController],
+  providers: [GeneratedCvService],
+  exports: [GeneratedCvService],
 })
-export class GeneratedCvModule { }
+export class GeneratedCvModule {}

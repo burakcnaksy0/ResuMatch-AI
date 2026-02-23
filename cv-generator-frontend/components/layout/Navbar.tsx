@@ -1,15 +1,18 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-import { Briefcase, LogOut } from 'lucide-react';
+import { Briefcase, LogOut, MessageSquare } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { APP_NAME } from '@/lib/constants';
+import FeedbackModal from '@/components/modals/FeedbackModal';
 
 export default function Navbar() {
     const { isAuthenticated, isLoading, logout, user } = useAuth();
     const pathname = usePathname();
+    const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
     // Don't show navbar on auth pages
     const isAuthPage = pathname?.startsWith('/auth');
@@ -87,6 +90,14 @@ export default function Navbar() {
                                 </span>
                             )}
                             <button
+                                onClick={() => setIsFeedbackModalOpen(true)}
+                                className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-blue-200 bg-[#232a36] rounded-full hover:bg-[#2d3544] hover:text-white transition-all border border-[#3b82f6]/30"
+                                title="Send Feedback"
+                            >
+                                <MessageSquare className="w-4 h-4" />
+                                <span className="hidden sm:inline">Feedback</span>
+                            </button>
+                            <button
                                 onClick={logout}
                                 className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-red-600 rounded-full hover:bg-red-700 transition-all shadow-lg shadow-red-900"
                             >
@@ -112,6 +123,12 @@ export default function Navbar() {
                     )
                 )}
             </div>
+
+            {/* Feedback Modal */}
+            <FeedbackModal
+                isOpen={isFeedbackModalOpen}
+                onClose={() => setIsFeedbackModalOpen(false)}
+            />
         </header>
     );
 }

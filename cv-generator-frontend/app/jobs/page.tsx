@@ -123,8 +123,8 @@ export default function JobsPage() {
             if (!canGenerateJobBasedCV()) {
                 toast.error(
                     <div className="flex flex-col gap-2">
-                        <p className="font-semibold">İş bazlı CV limitine ulaştınız!</p>
-                        <p className="text-sm">Pro'ya yükselterek sınırsız CV oluşturun.</p>
+                        <p className="font-semibold">Job-based CV limit reached!</p>
+                        <p className="text-sm">Upgrade to Pro for unlimited CV generation.</p>
                     </div>,
                     {
                         duration: 5000,
@@ -139,8 +139,8 @@ export default function JobsPage() {
             if (!canGenerateProfileBasedCV()) {
                 toast.error(
                     <div className="flex flex-col gap-2">
-                        <p className="font-semibold">Profil bazlı CV limitine ulaştınız!</p>
-                        <p className="text-sm">Pro'ya yükselterek sınırsız CV oluşturun.</p>
+                        <p className="font-semibold">Profile-based CV limit reached!</p>
+                        <p className="text-sm">Upgrade to Pro for unlimited CV generation.</p>
                     </div>,
                     {
                         duration: 5000,

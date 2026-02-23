@@ -5,55 +5,63 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Injectable()
 export class ProjectService {
-    constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
-    async create(createProjectDto: CreateProjectDto) {
-        return this.prisma.project.create({
-            data: {
-                ...createProjectDto,
-                startDate: createProjectDto.startDate ? new Date(createProjectDto.startDate) : null,
-                endDate: createProjectDto.endDate ? new Date(createProjectDto.endDate) : null,
-            },
-        });
+  async create(createProjectDto: CreateProjectDto) {
+    return this.prisma.project.create({
+      data: {
+        ...createProjectDto,
+        startDate: createProjectDto.startDate
+          ? new Date(createProjectDto.startDate)
+          : null,
+        endDate: createProjectDto.endDate
+          ? new Date(createProjectDto.endDate)
+          : null,
+      },
+    });
+  }
+
+  async findAllByProfile(profileId: string) {
+    return this.prisma.project.findMany({
+      where: { profileId },
+      orderBy: { startDate: 'desc' },
+    });
+  }
+
+  async findOne(id: string) {
+    const project = await this.prisma.project.findUnique({
+      where: { id },
+    });
+
+    if (!project) {
+      throw new NotFoundException(`Project with ID ${id} not found`);
     }
 
-    async findAllByProfile(profileId: string) {
-        return this.prisma.project.findMany({
-            where: { profileId },
-            orderBy: { startDate: 'desc' },
-        });
-    }
+    return project;
+  }
 
-    async findOne(id: string) {
-        const project = await this.prisma.project.findUnique({
-            where: { id },
-        });
+  async update(id: string, updateProjectDto: UpdateProjectDto) {
+    await this.findOne(id);
 
-        if (!project) {
-            throw new NotFoundException(`Project with ID ${id} not found`);
-        }
+    return this.prisma.project.update({
+      where: { id },
+      data: {
+        ...updateProjectDto,
+        startDate: updateProjectDto.startDate
+          ? new Date(updateProjectDto.startDate)
+          : undefined,
+        endDate: updateProjectDto.endDate
+          ? new Date(updateProjectDto.endDate)
+          : undefined,
+      },
+    });
+  }
 
-        return project;
-    }
+  async remove(id: string) {
+    await this.findOne(id);
 
-    async update(id: string, updateProjectDto: UpdateProjectDto) {
-        await this.findOne(id);
-
-        return this.prisma.project.update({
-            where: { id },
-            data: {
-                ...updateProjectDto,
-                startDate: updateProjectDto.startDate ? new Date(updateProjectDto.startDate) : undefined,
-                endDate: updateProjectDto.endDate ? new Date(updateProjectDto.endDate) : undefined,
-            },
-        });
-    }
-
-    async remove(id: string) {
-        await this.findOne(id);
-
-        return this.prisma.project.delete({
-            where: { id },
-        });
-    }
+    return this.prisma.project.delete({
+      where: { id },
+    });
+  }
 }

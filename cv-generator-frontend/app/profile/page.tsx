@@ -21,12 +21,14 @@ import {
     FolderKanban,
     Award,
     Languages,
-    CheckCircle,
-    AlertCircle,
     Sparkles,
     Shield,
-    Crown
+    ChevronRight,
+    LayoutDashboard,
+    Lightbulb,
+    Info
 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ProfilePage() {
     const { isAuthenticated } = useAuth();
@@ -48,7 +50,6 @@ export default function ProfilePage() {
             const res = await profileApi.getMe();
             setProfile(res.data);
         } catch (err: any) {
-            // 404 is expected if profile doesn't exist yet
             if (err.response?.status !== 404) {
                 console.error('Failed to fetch profile', err);
                 toast.error('Failed to load profile');
@@ -59,323 +60,252 @@ export default function ProfilePage() {
     };
 
     const handleProfileSuccess = () => {
-        fetchProfile(); // Refresh profile data
+        fetchProfile();
     };
 
     const tabs = [
-        {
-            id: 'personal',
-            label: 'Personal Info',
-            icon: User,
-            description: 'Basic information and contact details'
-        },
-        {
-            id: 'education',
-            label: 'Education',
-            icon: GraduationCap,
-            description: 'Your academic background'
-        },
-        {
-            id: 'experience',
-            label: 'Experience',
-            icon: Briefcase,
-            description: 'Work history and achievements'
-        },
-        {
-            id: 'skills',
-            label: 'Skills',
-            icon: Code,
-            description: 'Technical and soft skills'
-        },
-        {
-            id: 'projects',
-            label: 'Projects',
-            icon: FolderKanban,
-            description: 'Portfolio and projects'
-        },
-        {
-            id: 'certifications',
-            label: 'Certifications',
-            icon: Award,
-            description: 'Professional certifications'
-        },
-        {
-            id: 'languages',
-            label: 'Languages',
-            icon: Languages,
-            description: 'Language proficiency'
-        },
-        {
-            id: 'security',
-            label: 'Security',
-            icon: Shield,
-            description: 'Password and account security'
-        },
+        { id: 'personal', label: 'Personal Info', icon: User, description: 'Basic details & contact info', tip: 'Recruiters often search by location. Make sure yours is accurate!' },
+        { id: 'experience', label: 'Experience', icon: Briefcase, description: 'Work history & achievements', tip: 'Quantify your achievements (e.g., "Increased sales by 20%").' },
+        { id: 'education', label: 'Education', icon: GraduationCap, description: 'Academic background', tip: 'List your most recent degree first.' },
+        { id: 'skills', label: 'Skills', icon: Code, description: 'Technical & soft skills', tip: 'Mix technical skills (Java) with soft skills (Leadership).' },
+        { id: 'projects', label: 'Projects', icon: FolderKanban, description: 'Portfolio highlights', tip: 'Include links to live demos or GitHub repos if possible.' },
+        { id: 'certifications', label: 'Certifications', icon: Award, description: 'Professional certificates', tip: 'Certifications show your commitment to continuous learning.' },
+        { id: 'languages', label: 'Languages', icon: Languages, description: ' proficiency levels help set realistic expectations.' },
+        { id: 'security', label: 'Security', icon: Shield, description: 'Account settings', tip: 'Use a strong, unique password to keep your data safe.' },
     ];
 
-    // Use backend calculated completion
+    const currentTabInfo = tabs.find(t => t.id === activeTab);
+
     const completion = profile?.completeness?.total || 0;
     const suggestions = profile?.completeness?.suggestions || [];
 
     if (loadingProfile) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#181c24] via-[#232a36] to-[#10131a]">
-                <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#3b82f6] mb-4"></div>
-                    <p className="text-blue-200 font-medium">Loading your profile...</p>
+            <div className="min-h-screen flex items-center justify-center bg-[#0B0F19]">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+                    <p className="text-gray-400 font-medium">Loading profile...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#181c24] via-[#232a36] to-[#10131a]">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Header Section */}
-                <div className="mb-8">
-                    <div className="flex items-start justify-between flex-wrap gap-4">
-                        <div>
-                            <div className="flex items-center gap-3 mb-3">
-                                <div className="p-2 bg-gradient-to-br from-[#3b82f6] to-[#6366f1] rounded-xl">
-                                    <User className="w-6 h-6 text-white" />
-                                </div>
-                                <h1 className="text-3xl md:text-4xl font-bold text-white">
-                                    Master CV Profile
-                                </h1>
-                            </div>
-                            <p className="text-lg text-blue-200 max-w-2xl">
-                                Build your comprehensive CV profile. This information will be used to generate tailored, job-specific CVs with AI.
-                            </p>
+        <div className="min-h-screen bg-[#0B0F19] text-gray-100 pb-20 selection:bg-blue-500/30">
+            {/* Header / Breadcrumb */}
+            <div className="bg-[#151925]/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-40 supports-[backdrop-filter]:bg-[#151925]/60">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sm text-gray-400">
+                            <Link href="/dashboard" className="hover:text-white transition-colors flex items-center gap-1">
+                                <LayoutDashboard className="w-4 h-4" />
+                                Dashboard
+                            </Link>
+                            <ChevronRight className="w-4 h-4 text-gray-600" />
+                            <span className="text-white font-medium bg-white/5 px-2 py-0.5 rounded text-xs">My Profile</span>
                         </div>
 
-                        {/* Profile Completion Card */}
-                        <div className="bg-[#232a36] rounded-2xl border border-[#232a36] p-6 shadow-sm min-w-[280px]">
-                            <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm font-medium text-blue-200">Profile Completion</span>
-                                <span className="text-2xl font-bold text-white">{completion}%</span>
-                            </div>
-                            <div className="w-full bg-[#181c24] rounded-full h-3 mb-3 overflow-hidden">
-                                <div
-                                    className={`h-full rounded-full transition-all duration-500 ${completion === 100
-                                        ? 'bg-gradient-to-r from-green-500 to-emerald-500'
-                                        : 'bg-gradient-to-r from-blue-500 to-indigo-500'
-                                        }`}
-                                    style={{ width: `${completion}%` }}
-                                />
-                            </div>
-                            {completion === 100 ? (
-                                <div className="flex items-center gap-2 text-sm text-green-300">
-                                    <CheckCircle className="w-4 h-4" />
-                                    <span className="font-medium">Profile Complete!</span>
-                                </div>
-                            ) : (
-                                <div className="flex items-center gap-2 text-sm text-amber-300">
-                                    <AlertCircle className="w-4 h-4" />
-                                    <span className="font-medium">
-                                        {completion < 50 ? 'Let\'s get started' : 'Almost there!'}
-                                    </span>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Subscription Plan Card */}
-                        <div className="bg-[#232a36] rounded-2xl border border-[#232a36] p-6 shadow-sm min-w-[200px]">
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm font-medium text-blue-200">Current Plan</span>
-                                <div className={`p-2 rounded-lg ${isPro ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/20' : 'bg-gray-700/30'}`}>
-                                    {isPro ? <Crown className="w-5 h-5 text-amber-500" /> : <Shield className="w-5 h-5 text-gray-400" />}
-                                </div>
-                            </div>
-                            <div className="mt-2">
-                                <span className={`text-3xl font-bold ${isPro ? 'text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400' : 'text-white'}`}>
-                                    {isPro ? 'PRO' : 'FREE'}
+                        {/* Status Badge */}
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-full">
+                                <div className={`w-2 h-2 rounded-full ${completion === 100 ? 'bg-green-500' : 'bg-blue-500 animate-pulse'}`}></div>
+                                <span className={`text-xs font-medium ${completion === 100 ? 'text-green-400' : 'text-blue-400'}`}>
+                                    {completion === 100 ? 'All Set!' : `${completion}% Complete`}
                                 </span>
-                                <p className="text-xs text-blue-200 mt-1">
-                                    {isPro ? 'Premium Access Unlocked' : 'Basic Access'}
-                                </p>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    {/* Info Banner */}
-                    {completion < 100 && (
-                        <div className="mt-6 bg-[#232a36] border border-[#3b82f6] rounded-xl p-4">
-                            <div className="flex items-start gap-3">
-                                <Sparkles className="w-5 h-5 text-[#3b82f6] flex-shrink-0 mt-0.5" />
-                                <div className="flex-1">
-                                    <h3 className="text-sm font-semibold text-white mb-2">
-                                        Improve your profile strength
-                                    </h3>
-                                    <div className="space-y-1">
-                                        {suggestions.length > 0 ? (
-                                            suggestions.map((msg: string, idx: number) => (
-                                                <p key={idx} className="text-sm text-blue-200 flex items-center gap-2">
-                                                    <span className="w-1.5 h-1.5 bg-[#3b82f6] rounded-full" />
-                                                    {msg}
-                                                </p>
-                                            ))
-                                        ) : (
-                                            <p className="text-sm text-blue-200">
-                                                The more information you provide, the better our AI can tailor your CVs.
-                                            </p>
-                                        )}
-                                    </div>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+                    {/* Sticky Sidebar */}
+                    <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-24">
+                        {/* User Card */}
+                        <div className="bg-[#151925] rounded-2xl p-6 border border-white/5 flex flex-col items-center text-center relative overflow-hidden group">
+                            <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-blue-500 blur-2xl opacity-20 rounded-full"></div>
+                                <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-2xl font-bold text-white mb-4 shadow-xl ring-4 ring-[#151925]">
+                                    {profile?.firstName?.[0] || 'U'}{profile?.lastName?.[0] || ''}
+                                </div>
+                            </div>
+
+                            <h2 className="text-lg font-bold text-white mb-1 relative z-10">
+                                {profile?.firstName ? `${profile.firstName} ${profile.lastName}` : 'User Profile'}
+                            </h2>
+                            <p className="text-sm text-gray-400 mb-4">{profile?.email}</p>
+
+                            <div className={`px-4 py-1.5 rounded-full text-[10px] font-bold tracking-wider border mb-6 ${isPro
+                                ? 'bg-amber-500/10 border-amber-500/30 text-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.2)]'
+                                : 'bg-white/5 border-white/10 text-gray-400'}`}>
+                                {isPro ? 'PRO PLAN' : 'FREE PLAN'}
+                            </div>
+
+                            {/* Profile Strength Bar */}
+                            <div className="w-full text-left bg-black/20 rounded-xl p-3 border border-white/5">
+                                <div className="flex justify-between text-xs mb-2">
+                                    <span className="text-gray-400 font-medium">Profile Strength</span>
+                                    <span className={completion === 100 ? 'text-green-400' : 'text-blue-400 font-bold'}>{completion}%</span>
+                                </div>
+                                <div className="w-full h-1.5 bg-gray-700/50 rounded-full overflow-hidden">
+                                    <div
+                                        className={`h-full rounded-full transition-all duration-1000 ${completion === 100
+                                                ? 'bg-gradient-to-r from-green-500 to-emerald-400'
+                                                : 'bg-gradient-to-r from-blue-500 to-indigo-500'
+                                            }`}
+                                        style={{ width: `${completion}%` }}
+                                    ></div>
                                 </div>
                             </div>
                         </div>
-                    )}
-                </div>
 
-                {/* Main Content Card */}
-                <div className="bg-[#232a36] rounded-2xl shadow-lg border border-[#232a36] overflow-hidden">
-                    {/* Desktop Tabs */}
-                    <div className="hidden lg:block border-b border-[#181c24] bg-[#181c24]">
-                        <nav className="flex overflow-x-auto">
+                        {/* Navigation Tabs */}
+                        <nav className="bg-[#151925] rounded-2xl border border-white/5 overflow-hidden shadow-lg">
                             {tabs.map((tab) => {
                                 const Icon = tab.icon;
+                                const isActive = activeTab === tab.id;
                                 return (
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
-                                        className={`
-                                            group relative flex items-center gap-3 px-6 py-4 text-sm font-medium whitespace-nowrap
-                                            transition-all duration-200
-                                            ${activeTab === tab.id
-                                                ? 'text-[#3b82f6] bg-[#232a36]'
-                                                : 'text-blue-200 hover:text-white hover:bg-[#232a36]'
-                                            }
-                                        `}
+                                        className={`w-full flex items-center gap-3 px-5 py-4 text-sm font-medium transition-all duration-300 relative overflow-hidden group
+                                            ${isActive
+                                                ? 'text-white'
+                                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                            }`}
                                     >
-                                        <Icon className={`w-5 h-5 ${activeTab === tab.id ? 'text-[#3b82f6]' : 'text-blue-300 group-hover:text-blue-200'}`} />
-                                        <span>{tab.label}</span>
-                                        {activeTab === tab.id && (
-                                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#3b82f6] to-[#6366f1]" />
+                                        {isActive && (
+                                            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-transparent border-l-4 border-blue-500" />
                                         )}
+                                        <Icon className={`w-4 h-4 relative z-10 transition-colors duration-300 ${isActive ? 'text-blue-400' : 'text-gray-500 group-hover:text-gray-300'}`} />
+                                        <span className="relative z-10">{tab.label}</span>
+                                        {isActive && <ChevronRight className="w-4 h-4 ml-auto text-blue-500 relative z-10" />}
                                     </button>
                                 );
                             })}
                         </nav>
-                    </div>
 
-                    {/* Mobile Tabs - Grid Layout */}
-                    <div className="lg:hidden border-b border-[#181c24] bg-[#181c24] p-4">
-                        <div className="grid grid-cols-2 gap-2">
-                            {tabs.map((tab) => {
-                                const Icon = tab.icon;
-                                return (
-                                    <button
-                                        key={tab.id}
-                                        onClick={() => setActiveTab(tab.id)}
-                                        className={`
-                                            flex flex-col items-center gap-2 p-3 rounded-xl text-xs font-medium
-                                            transition-all duration-200
-                                            ${activeTab === tab.id
-                                                ? 'bg-[#232a36] text-[#3b82f6] shadow-sm border border-[#3b82f6]'
-                                                : 'text-blue-200 hover:bg-[#232a36]'
-                                            }
-                                        `}
-                                    >
-                                        <Icon className={`w-5 h-5 ${activeTab === tab.id ? 'text-[#3b82f6]' : 'text-blue-300'}`} />
-                                        <span>{tab.label}</span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {/* Tab Content */}
-                    <div className="p-6 md:p-8">
-                        {/* Active Tab Header */}
-                        <div className="mb-6 pb-6 border-b border-[#181c24]">
-                            <div className="flex items-start gap-4">
-                                <div className="p-3 bg-[#181c24] rounded-xl">
-                                    {(() => {
-                                        const Icon = tabs.find(t => t.id === activeTab)?.icon || User;
-                                        return <Icon className="w-6 h-6 text-[#3b82f6]" />;
-                                    })()}
+                        {/* Dynamic Pro Tip */}
+                        {currentTabInfo?.tip && (
+                            <div className="bg-gradient-to-br from-indigo-900/20 to-purple-900/20 rounded-2xl p-5 border border-indigo-500/20 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-3 opacity-10">
+                                    <Lightbulb className="w-12 h-12 text-white" />
                                 </div>
-                                <div>
-                                    <h2 className="text-2xl font-bold text-white mb-1">
-                                        {tabs.find(t => t.id === activeTab)?.label}
-                                    </h2>
-                                    <p className="text-blue-200">
-                                        {tabs.find(t => t.id === activeTab)?.description}
-                                    </p>
+                                <div className="flex items-start gap-3 relative z-10">
+                                    <div className="bg-indigo-500/20 p-2 rounded-lg">
+                                        <Lightbulb className="w-4 h-4 text-indigo-300" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-xs font-bold text-indigo-200 uppercase tracking-wide mb-1">Expert Tip</h4>
+                                        <p className="text-xs text-indigo-100/80 leading-relaxed">
+                                            {currentTabInfo.tip}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Main Content Area */}
+                    <div className="lg:col-span-9 space-y-6">
+
+                        {/* Suggestions Banner - Only show if incomplete */}
+                        {completion < 100 && suggestions.length > 0 && (
+                            <div className="bg-gradient-to-r from-[#1E293B] to-[#0F172A] border border-blue-500/30 rounded-2xl p-1 relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                <div className="bg-[#151925]/50 backdrop-blur-sm rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center gap-4 relative z-10">
+                                    <div className="p-3 bg-blue-500/10 rounded-xl shrink-0 border border-blue-500/20">
+                                        <Sparkles className="w-5 h-5 text-blue-400 animate-pulse-slow" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-sm font-bold text-white mb-1 flex items-center gap-2">
+                                            Profile Optimization
+                                            <span className="px-2 py-0.5 rounded text-[10px] bg-blue-500 text-white">Recommended</span>
+                                        </h3>
+                                        <p className="text-xs text-gray-400">Complete these sections to unlock better job matching scores:</p>
+                                    </div>
+                                    <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+                                        {suggestions.slice(0, 2).map((s: string, i: number) => (
+                                            <span key={i} className="whitespace-nowrap px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 transition-colors rounded-lg text-xs font-medium text-blue-300 border border-blue-500/20 cursor-default flex items-center gap-1.5">
+                                                <Info className="w-3 h-3" /> {s}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Tab Content Panel */}
+                        <div className="bg-[#151925] rounded-2xl border border-white/5 min-h-[600px] shadow-2xl relative overflow-hidden">
+                            {/* Top Glow */}
+                            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 opacity-50" />
+
+                            <div className="border-b border-white/5 p-6 md:p-8 bg-[#1a1f2e]/30">
+                                <div className="flex items-start gap-4">
+                                    <div className="p-3 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-inner border border-white/5">
+                                        {(() => {
+                                            const t = tabs.find(x => x.id === activeTab);
+                                            const Icon = t?.icon || User;
+                                            return <Icon className="w-6 h-6 text-white" />;
+                                        })()}
+                                    </div>
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-white mb-1">
+                                            {tabs.find(t => t.id === activeTab)?.label}
+                                        </h2>
+                                        <p className="text-sm text-gray-400">
+                                            {tabs.find(t => t.id === activeTab)?.description}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-8">
+                                <div className="animate-fade-in-up">
+                                    {activeTab === 'personal' && (
+                                        <ProfileForm
+                                            initialData={profile}
+                                            profileId={profile?.id}
+                                            onSuccess={handleProfileSuccess}
+                                        />
+                                    )}
+
+                                    {activeTab === 'education' && (
+                                        <EducationList profileId={profile?.id || ''} />
+                                    )}
+
+                                    {activeTab === 'experience' && (
+                                        <WorkExperienceList profileId={profile?.id || ''} />
+                                    )}
+
+                                    {activeTab === 'skills' && (
+                                        <SkillList profileId={profile?.id || ''} />
+                                    )}
+
+                                    {activeTab === 'projects' && (
+                                        <ProjectList profileId={profile?.id || ''} />
+                                    )}
+
+                                    {activeTab === 'certifications' && (
+                                        <CertificationList profileId={profile?.id || ''} />
+                                    )}
+
+                                    {activeTab === 'languages' && (
+                                        <LanguageList profileId={profile?.id || ''} />
+                                    )}
+
+                                    {activeTab === 'security' && (
+                                        <SecuritySettings />
+                                    )}
                                 </div>
                             </div>
                         </div>
 
-                        {/* Content Area */}
-                        <div className="space-y-6">
-                            {activeTab === 'personal' && (
-                                <ProfileForm
-                                    initialData={profile}
-                                    profileId={profile?.id}
-                                    onSuccess={handleProfileSuccess}
-                                />
-                            )}
-
-                            {activeTab === 'education' && (
-                                <EducationList profileId={profile?.id || ''} />
-                            )}
-
-                            {activeTab === 'experience' && (
-                                <WorkExperienceList profileId={profile?.id || ''} />
-                            )}
-
-                            {activeTab === 'skills' && (
-                                <SkillList profileId={profile?.id || ''} />
-                            )}
-
-                            {activeTab === 'projects' && (
-                                <ProjectList profileId={profile?.id || ''} />
-                            )}
-
-                            {activeTab === 'certifications' && (
-                                <CertificationList profileId={profile?.id || ''} />
-                            )}
-
-                            {activeTab === 'languages' && (
-                                <LanguageList profileId={profile?.id || ''} />
-                            )}
-
-                            {activeTab === 'security' && (
-                                <SecuritySettings />
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Help Section */}
-                <div className="mt-8 grid md:grid-cols-3 gap-6">
-                    <div className="bg-[#232a36] rounded-xl p-6 border border-[#232a36]">
-                        <div className="w-12 h-12 bg-[#181c24] rounded-xl flex items-center justify-center mb-4">
-                            <Sparkles className="w-6 h-6 text-[#3b82f6]" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-white mb-2">AI Optimization</h3>
-                        <p className="text-sm text-blue-200">
-                            Our AI analyzes your profile and optimizes it for each job application automatically.
-                        </p>
-                    </div>
-
-                    <div className="bg-[#232a36] rounded-xl p-6 border border-[#232a36]">
-                        <div className="w-12 h-12 bg-[#181c24] rounded-xl flex items-center justify-center mb-4">
-                            <CheckCircle className="w-6 h-6 text-[#6366f1]" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-white mb-2">ATS Friendly</h3>
-                        <p className="text-sm text-blue-200">
-                            All information is formatted to pass through Applicant Tracking Systems seamlessly.
-                        </p>
-                    </div>
-
-                    <div className="bg-[#232a36] rounded-xl p-6 border border-[#232a36]">
-                        <div className="w-12 h-12 bg-[#181c24] rounded-xl flex items-center justify-center mb-4">
-                            <Award className="w-6 h-6 text-[#a21caf]" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-white mb-2">Stand Out</h3>
-                        <p className="text-sm text-blue-200">
-                            Highlight your achievements and skills in a way that catches recruiters' attention.
-                        </p>
                     </div>
                 </div>
             </div>

@@ -19,6 +19,7 @@ import { PdfModule } from './pdf/pdf.module';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { FeedbackModule } from './feedback/feedback.module';
 
 @Module({
   imports: [
@@ -44,8 +45,9 @@ import { SubscriptionModule } from './subscription/subscription.module';
     AuthModule,
     MailModule,
     SubscriptionModule,
+    FeedbackModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

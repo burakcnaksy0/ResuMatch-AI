@@ -216,10 +216,10 @@ export default function GeneratedCVsPage() {
                                 <div className="flex items-start gap-3 flex-1">
                                     <AlertCircle className="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" />
                                     <div>
-                                        <h3 className="text-lg font-bold text-white mb-2">CV Oluşturma Limitlerin</h3>
+                                        <h3 className="text-lg font-bold text-white mb-2">Your CV Generation Limits</h3>
                                         <div className="space-y-2 text-sm">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-32 text-blue-200">İş bazlı CV:</div>
+                                                <div className="w-32 text-blue-200">Job-based CV:</div>
                                                 <div className="flex-1 bg-[#181c24] rounded-full h-2 overflow-hidden">
                                                     <div
                                                         className={`h-full transition-all ${((subscription.usage.jobBasedCVs.used ?? 0) / (subscription.usage.jobBasedCVs.limit ?? 1)) >= 1 ? 'bg-red-500' : 'bg-blue-500'
@@ -234,7 +234,7 @@ export default function GeneratedCVsPage() {
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <div className="w-32 text-blue-200">Profil bazlı CV:</div>
+                                                <div className="w-32 text-blue-200">Profile-based CV:</div>
                                                 <div className="flex-1 bg-[#181c24] rounded-full h-2 overflow-hidden">
                                                     <div
                                                         className={`h-full transition-all ${((subscription.usage.profileBasedCVs.used ?? 0) / (subscription.usage.profileBasedCVs.limit ?? 1)) >= 1 ? 'bg-red-500' : 'bg-purple-500'
@@ -256,7 +256,7 @@ export default function GeneratedCVsPage() {
                                     className="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold rounded-lg transition-all flex items-center gap-2 shadow-lg whitespace-nowrap"
                                 >
                                     <Crown className="w-4 h-4" />
-                                    Pro'ya Yükselt
+                                    Upgrade to Pro
                                 </Link>
                             </div>
                         </div>

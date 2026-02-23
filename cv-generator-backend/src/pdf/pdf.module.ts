@@ -4,8 +4,8 @@ import { PdfService } from './pdf.service';
 import { ExternalPdfService } from './external-pdf.service';
 
 @Module({
-    imports: [ConfigModule],
-    providers: [PdfService, ExternalPdfService],
-    exports: [PdfService, ExternalPdfService],
+  imports: [ConfigModule],
+  providers: [PdfService, ExternalPdfService],
+  exports: [PdfService, ExternalPdfService],
 })
-export class PdfModule { }
+export class PdfModule {}
