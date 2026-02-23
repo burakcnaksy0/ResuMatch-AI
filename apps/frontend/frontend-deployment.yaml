@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: burakcanaksy/cv-generator-frontend:v2
+          image: burakcanaksy/cv-generator-frontend:v3
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
