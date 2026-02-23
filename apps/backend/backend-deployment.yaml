@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: burakcanaksy/cv-generator-backend:v2
+          image: burakcanaksy/cv-generator-backend:v3
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
