@@ -63,10 +63,11 @@ Grouped properly:
 Example:
 - Backend: Java, Spring Boot, Hibernate, REST APIs
 - Databases: PostgreSQL, MySQL
-- DevOps: Docker, Kubernetes, CI/CD
-- Tools: Git, GitHub, Postman
+- Cloud & DevOps: AWS, GCP, Docker, Kubernetes, CI/CD
+- Methodologies & Soft Skills: Agile, Scrum, Code Review, Communication
 Ensure:
 - Skills reflect job description priority
+- Always include a 'Cloud & DevOps' and 'Methodologies & Soft Skills' category if relevant or if the user lists them. This ensures ATS tools parsing for Agile, Scrum, AWS, etc. can find them.
 - No random or irrelevant skills
 ---
 ### PROFESSIONAL EXPERIENCE
@@ -76,15 +77,16 @@ For each role:
 - 4–7 bullet points
 Each bullet MUST:
 - Start with strong action verbs (Designed, Developed, Optimized, Implemented, Engineered)
-- Include measurable impact if possible
+- MUST include measurable impact (e.g., percentages, exact numbers, time saved). If none provided, infer reasonable contextual scale or focus on business outcomes.
 - Include relevant keywords from job description
 - Focus on system design, scalability, performance, API development, architecture where relevant
 ---
 ### PROJECTS
 Each project must include:
 - Project name
-- Short description (1–2 lines)
+- Short description (strict maximum of 2-3 lines). Do NOT write long paragraphs as ATS systems struggle with them.
 - Tech stack
+- Live demo URL or deployment status (if available)
 - Key achievements
 - Relevance to job description
 Prioritize projects that match job requirements.
@@ -133,8 +135,8 @@ JSON SCHEMA:
     "id": "string",
     "company": "string",
     "title": "string",
-    "startDate": "YYYY-MM",
-    "endDate": "YYYY-MM | null",
+    "startDate": "string (YYYY-MM or Month YYYY)",
+    "endDate": "string (YYYY-MM, 'Month YYYY (X days)' for short stints, or null)",
     "isCurrent": "boolean",
     "location": "string",
     "bullets": ["string"],
@@ -228,7 +230,7 @@ The final CV must be:
     "endDate": "YYYY-MM | null",
     "isCurrent": "boolean",
     "location": "string",
-    "bullets": ["string (4-6 bullets, strong verb first, JD keywords woven in)"],
+    "bullets": ["string (4-6 bullets, strong verb first, JD keywords woven in, MUST include numerical metrics)"],
     "relevanceScore": "integer 1-10"
   }],
 
@@ -267,8 +269,8 @@ The final CV must be:
   "projects": [{
     "id": "string",
     "name": "string",
-    "description": "string (2 sentences: what+why, then how+outcome)",
-    "url": "string | null",
+    "description": "string (Strict MAX 2-3 sentences. Do not write long text blocks. Focus on what was built and the outcome)",
+    "url": "string | null (Include live demo link, GitHub URL, or deployment status if available)",
     "technologies": ["string — use JD exact terms where matching"]
   }],
 
@@ -415,6 +417,7 @@ ${
 ──────────────────────────────────────────────────────
 PROJECTS ${!hasProjects ? '— ⚠ EMPTY → output projects: []' : ''}
 ──────────────────────────────────────────────────────
+⚠ CRITICAL PROJECT RULE: The following project descriptions might be very long. You MUST aggressively summarize them into a MAXIMUM of 2 sentences (2-3 lines max) focusing ONLY on the core value and outcome. Do not copy long paragraphs!
 ${
   hasProjects
     ? JSON.stringify(profile.projects, null, 2)
@@ -468,6 +471,7 @@ OUTPUT: Only the JSON object. No preamble. No explanation. No markdown fences.
   ${exp.technologies?.length ? `Technologies : ${exp.technologies.join(', ')}` : ''}
   
   RAW BULLETS — REWRITE using JD keyword terminology. Do NOT copy these verbatim.
+  Ensure EVERY rewritten bullet focuses on a measurable result or numerical metric.
   Preserve the facts; use JD exact terms where the work aligns:
 ${
   bullets.length > 0

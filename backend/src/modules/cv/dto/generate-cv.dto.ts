@@ -6,6 +6,7 @@ const VALID_TEMPLATES = [
   'classic',
   'minimal',
   'professional',
+  'ats',
 ] as const;
 
 export class GenerateCvDto {
