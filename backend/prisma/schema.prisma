@@ -1,0 +1,186 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────
+// USER
+// ─────────────────────────────────────────
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  passwordHash    String
+  firstName       String?
+  lastName        String?
+  isEmailVerified Boolean   @default(false)
+  role            Role      @default(USER)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime? // soft delete
+
+  // Relations
+  profile         Profile?
+  generatedCVs    GeneratedCV[]
+  jobDescriptions JobDescription[]
+  refreshTokens   RefreshToken[]
+  usageTracking   UsageTracking[]
+
+  @@index([email])
+  @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+// ─────────────────────────────────────────
+// PROFILE (Master CV)
+// ─────────────────────────────────────────
+model Profile {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Personal info
+  headline  String?
+  summary   String?
+  location  String?
+  phone     String?
+  website   String?
+  linkedin  String?
+  github    String?
+  photo     String?   @db.Text
+
+  // Structured JSON data — avoids premature normalization
+  // All arrays of objects, used exclusively as AI prompt input
+  experiences    Json @default("[]")
+  educations     Json @default("[]")
+  skills         Json @default("[]")
+  certifications Json @default("[]")
+  languages      Json @default("[]")
+  projects       Json @default("[]")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+// ─────────────────────────────────────────
+// JOB DESCRIPTION
+// ─────────────────────────────────────────
+model JobDescription {
+  id        String  @id @default(uuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title     String
+  company   String?
+  location  String?
+  rawText   String  // raw pasted job description text
+  parsedData Json?  // optional AI-parsed structured data
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  generatedCVs GeneratedCV[]
+
+  @@index([userId])
+  @@map("job_descriptions")
+}
+
+// ─────────────────────────────────────────
+// GENERATED CV
+// ─────────────────────────────────────────
+model GeneratedCV {
+  id               String         @id @default(uuid())
+  userId           String
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobDescriptionId String
+  jobDescription   JobDescription @relation(fields: [jobDescriptionId], references: [id], onDelete: Cascade)
+
+  templateId String   // "modern" | "classic" | "minimal" | "executive"
+  status     CVStatus @default(PENDING)
+  includePhoto Boolean @default(true)
+
+  // AI-generated structured CV data
+  cvData     Json?
+
+  // User-edited version of cvData (WYSIWYG edits)
+  editedData Json?
+
+  // AI metadata
+  aiModel          String?
+  promptTokens     Int?
+  completionTokens Int?
+  generationCostUsd Float?
+
+  // Error tracking
+  errorMessage String?
+  retryCount   Int     @default(0)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // soft delete
+
+  @@index([userId])
+  @@index([status])
+  @@map("generated_cvs")
+}
+
+enum CVStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+// ─────────────────────────────────────────
+// REFRESH TOKEN
+// ─────────────────────────────────────────
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tokenHash String   @unique // Stored as bcrypt hash, never plain text
+  family    String           // Token family for rotation / reuse detection
+  isRevoked Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@map("refresh_tokens")
+}
+
+// ─────────────────────────────────────────
+// USAGE TRACKING
+// ─────────────────────────────────────────
+model UsageTracking {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  action   UsageAction
+  metadata Json?       // model name, token counts, etc.
+  costUsd  Float?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("usage_tracking")
+}
+
+enum UsageAction {
+  CV_GENERATED
+  CV_EXPORTED_PDF
+  PROFILE_UPDATED
+}
